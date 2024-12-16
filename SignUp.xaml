@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MoneyMap.SignUp"
+             Title="Sign Up">
+    <VerticalStackLayout Padding="30" Spacing="20">
+        <!-- Welcome Label -->
+        <Label 
+            Text="Create your account"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" 
+            FontSize="24"/>
+
+        <!-- Full Name Entry -->
+        <Entry x:Name="FullNameEntry" 
+               Placeholder="Full Name"
+               Keyboard="Default"/>
+
+        <!-- Email Entry -->
+        <Entry x:Name="EmailEntry" 
+               Placeholder="Email"
+               Keyboard="Email"/>
+
+        <!-- Password Entry -->
+        <Entry x:Name="PasswordEntry" 
+               Placeholder="Password"
+               IsPassword="True"/>
+
+        <!-- Confirm Password Entry -->
+        <Entry x:Name="ConfirmPasswordEntry" 
+               Placeholder="Confirm Password"
+               IsPassword="True"/>
+
+        <!-- Sign Up Button -->
+        <Button Text="Sign Up" 
+                HorizontalOptions="Center" 
+                Clicked="OnSignUpClicked"/>
+
+        <!-- Login Text Link -->
+        <Label Text="Already have an account? Log In"
+               HorizontalOptions="Center"
+               TextColor="Blue">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnLoginTapped" />
+            </Label.GestureRecognizers>
+        </Label>
+    </VerticalStackLayout>
+</ContentPage>
