@@ -1,4 +1,5 @@
 using Microsoft.Maui.Controls;
+using MoneyMap.Data;
 
 namespace MoneyMap
 {
@@ -8,41 +9,53 @@ namespace MoneyMap
         {
             InitializeComponent();
         }
-
-        // Sign Up button click handler
         private async void OnSignUpClicked(object sender, EventArgs e)
         {
-            // Validate input
             string fullName = FullNameEntry.Text;
-            string email = EmailEntry.Text;
+            string username = UsernameEntry.Text;
             string password = PasswordEntry.Text;
             string confirmPassword = ConfirmPasswordEntry.Text;
 
-            // Basic validation for empty fields
-            if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(email) ||
+            if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(username) ||
                 string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword))
             {
                 await DisplayAlert("Error", "Please fill in all fields.", "OK");
                 return;
             }
 
-            // Check if passwords match
             if (password != confirmPassword)
             {
                 await DisplayAlert("Error", "Passwords do not match.", "OK");
                 return;
             }
 
-            // Here, you can add logic for signing up the user (e.g., API call)
+            //await DisplayAlert("Success", "Account created successfully!", "OK");
 
-            // If successful, navigate to the login page or home page
-            await DisplayAlert("Success", "Account created successfully!", "OK");
+            //await Navigation.PopAsync();
 
-            // Navigate to the login page or home screen
-            await Navigation.PopAsync();  // Go back to Login page
+            try
+            {
+                // Save user to the database
+                DatabaseHelper.AddUser(fullName, username, password);
+                SignUpError.TextColor = Colors.Green;
+                SignUpError.Text = "Registration successful!";
+                SignUpError.IsVisible = true;
+
+                // Clear fields
+                FullNameEntry.Text = string.Empty;
+                PasswordEntry.Text = string.Empty;
+                ConfirmPasswordEntry.Text = string.Empty;
+
+                // Optionally navigate back to login page
+                // await Navigation.PopAsync();
+            }
+            catch (Exception ex)
+            {
+                SignUpError.Text = $"Error: {ex.Message}";
+                SignUpError.IsVisible = true;
+            }
         }
 
-        // Login text link click handler
         private async void OnLoginTapped(object sender, EventArgs e)
         {
             // Navigate back to the Login page

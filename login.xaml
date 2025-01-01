@@ -3,36 +3,69 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MoneyMap.Login"
              Title="Login">
-    <VerticalStackLayout Padding="30" Spacing="20">
-        <!-- Welcome Label -->
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" 
-            FontSize="24"/>
 
-        <!-- Username Entry -->
-        <Entry x:Name="UsernameEntry" 
-               Placeholder="Username" 
-               Keyboard="Email"/>
+    <Grid BackgroundColor="#F5F5F5"
+          VerticalOptions="FillAndExpand"
+          HorizontalOptions="FillAndExpand">
 
-        <!-- Password Entry -->
-        <Entry x:Name="PasswordEntry" 
-               Placeholder="Password" 
-               IsPassword="True"/>
-
-        <!-- Login Button -->
-        <Button Text="Login" 
-                HorizontalOptions="Center" 
-                Clicked="OnLoginClicked"/>
-
-        <!-- Sign-Up Text Link -->
-        <Label Text="Don't have an account? Sign Up"
+        <!-- Centered Card -->
+        <Frame CornerRadius="15"
+               BackgroundColor="White"
+               Padding="25"
+               WidthRequest="350"
+               VerticalOptions="Center"
                HorizontalOptions="Center"
-               TextColor="Blue">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnSignUpTapped" />
-            </Label.GestureRecognizers>
-        </Label>
-    </VerticalStackLayout>
+               HasShadow="True">
+
+            <VerticalStackLayout Spacing="20">
+                <!-- Header -->
+                <Label Text="Welcome Back!"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       TextColor="Black" />
+
+                <!-- Username Field -->
+                <Label Text="Username"
+                       FontAttributes="Bold"
+                       TextColor="#333" />
+                <Entry x:Name="UsernameEntry"
+                       Placeholder="Enter username"
+                       Keyboard="Default"
+                       BackgroundColor="#F9F9F9"
+                       TextColor="Black"
+                       HeightRequest="40" />
+
+                <!-- Password Field -->
+                <Label Text="Password"
+                       FontAttributes="Bold"
+                       TextColor="#333" />
+                <Entry x:Name="PasswordEntry"
+                       Placeholder="Enter password"
+                       IsPassword="True"
+                       BackgroundColor="#F9F9F9"
+                       TextColor="Black"
+                       HeightRequest="40" />
+
+                <!-- Login Button -->
+                <Button Text="Login"
+                        BackgroundColor="#007BFF"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="10"
+                        Clicked="OnLoginClicked" />
+
+                <!-- Sign-Up Prompt -->
+                <Label Text="Don't have an account? Sign up for free"
+                       FontSize="12"
+                       HorizontalTextAlignment="Center"
+                       TextColor="#007BFF">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSignUpTapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 </ContentPage>

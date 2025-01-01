@@ -1,0 +1,83 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MoneyMap"
+             x:Class="MoneyMap.CashOutflows"
+             Title="Cash Outflows">
+    <ContentPage.Resources>
+        <Style x:Key="ItemLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="TextColor" Value="Black"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+        <Style x:Key="AmountLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="TextColor" Value="Red"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+        <Style x:Key="DateLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextColor" Value="Gray"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="10">
+            <Label Text="Add a Cash Outflow"
+                   HorizontalOptions="Center"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,10"/>
+
+            <SearchBar x:Name="CashOutflowSearchBar"
+                       Placeholder="Search Cash Outflows"
+                       TextChanged="OnSearchTextChanged"
+                       Margin="0,10,0,10"/>
+
+            <Entry x:Name="TitleEntry" Placeholder="Enter Title"/>
+            <Entry x:Name="AmountEntry" Placeholder="Enter Amount" Keyboard="Numeric"/>
+            <Entry x:Name="NoteEntry" Placeholder="Enter Note"/>
+
+            <Button Text="Add Outflow" Clicked="OnAddCashOutflowClicked" 
+                    HorizontalOptions="Center" Margin="0,20,0,10"/>
+
+            <Label Text="Select Date Range" FontSize="14" HorizontalOptions="Center" Margin="0,10,0,5"/>
+
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
+                <DatePicker x:Name="StartDatePicker" 
+                            MinimumDate="2023-01-01"
+                            MaximumDate="2100-01-01"
+                            DateSelected="OnStartDateChanged"/>
+
+                <DatePicker x:Name="EndDatePicker"
+                            MinimumDate="2023-01-01"
+                            MaximumDate="2100-01-01"
+                            DateSelected="OnEndDateChanged"/>
+            </StackLayout>
+
+            <CollectionView x:Name="CashOutflowListView"
+                            ItemsSource="{Binding FilteredCashOutflowsList}"
+                            BackgroundColor="White">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="Black" StrokeThickness="1" Margin="0,10,0,0" Padding="10">
+                            <StackLayout>
+                                <Label Text="{Binding Title}" Style="{StaticResource ItemLabelStyle}"/>
+                                <Label Text="{Binding Amount, StringFormat='{0:C}'}" Style="{StaticResource AmountLabelStyle}"/>
+                                <Label Text="{Binding Date, StringFormat='{0:MM/dd/yyyy}'}" Style="{StaticResource DateLabelStyle}"/>
+                                <Label Text="{Binding Note}" Style="{StaticResource ItemLabelStyle}"/>
+                            </StackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label x:Name="CashOutFlowError" TextColor="Red" IsVisible="False" />
+
+            <Button Text="Go to Dashboard"
+                    HorizontalOptions="Center"
+                    Margin="0,20,0,0"
+                    Clicked="OnDashboardButtonClicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

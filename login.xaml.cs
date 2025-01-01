@@ -11,10 +11,23 @@ namespace MoneyMap
 
 
         // Login button click handler
-        private void OnLoginClicked(object sender, EventArgs e)
+        private async void OnLoginClicked(object sender, EventArgs e)
         {
-            // Implement login logic here (e.g., validate username/password)
+            string username = UsernameEntry.Text?.Trim();
+            string password = PasswordEntry.Text?.Trim();
+
+            if (username == "admin" && password == "password")
+            {
+                // Navigate to the dashboard page
+                await Navigation.PushAsync(new DashboardPage());
+            }
+            else
+            {
+                // Display error message
+                await DisplayAlert("Login Failed", "Invalid username or password. Please try again.", "OK");
+            }
         }
+
 
         // Sign Up button click handler
         private async void OnSignUpTapped(object sender, EventArgs e)

@@ -1,0 +1,97 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MoneyMap"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             x:Class="MoneyMap.CashInflows"
+             Title="CashInflows">
+    <ContentPage.Resources>
+        <Style x:Key="ItemLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="TextColor" Value="Black"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+
+        <Style x:Key="AmountLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="TextColor" Value="Green"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+
+        <Style x:Key="DateLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextColor" Value="Gray"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+
+        <Style x:Key="NoteLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextColor" Value="Gray"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="10">
+            <Label Text="Add a Cash Inflow"
+                   HorizontalOptions="Center"
+                   FontSize="18" 
+                   FontAttributes="Bold" 
+                   Margin="0,10,0,10"/>
+
+            <SearchBar x:Name="CashInflowSearchBar"
+                       Placeholder="Search Cash Inflows"
+                       TextChanged="OnSearchTextChanged"
+                       Margin="0,10,0,10" />
+
+            <Entry x:Name="TitleEntry" Placeholder="Enter Title" />
+            <Entry x:Name="AmountEntry" Placeholder="Enter Amount" Keyboard="Numeric" />
+            <Entry x:Name="NoteEntry" Placeholder="Enter Note" />
+
+            <Button Text="Add Inflow" Clicked="OnAddCashInflowClicked" 
+                    HorizontalOptions="Center" Margin="0,20,0,10"/>
+
+            <Label Text="Select Date Range" FontSize="14" HorizontalOptions="Center" Margin="0,10,0,5"/>
+
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
+                <DatePicker x:Name="StartDatePicker" 
+                            Date="{Binding StartDate}" 
+                            MinimumDate="2023-01-01" 
+                            MaximumDate="{Binding EndDate}"
+                            DateSelected="OnStartDateChanged"/>
+                <DatePicker x:Name="EndDatePicker" 
+                            Date="{Binding EndDate}" 
+                            MinimumDate="{Binding StartDate}" 
+                            MaximumDate="{x:Static sys:DateTime.Now}"
+                            DateSelected="OnEndDateChanged"/>
+            </StackLayout>
+
+            <CollectionView x:Name="CashInflowListView"
+                            ItemsSource="{Binding FilteredCashInflowsList}" 
+                            SelectionChanged="OnCashInflowSelectionChanged"
+                            BackgroundColor="LightGray">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Margin="0,10,0,0">
+                            <BoxView HeightRequest="1" Color="Gray" HorizontalOptions="FillAndExpand" />
+
+                            <Frame Padding="10" BorderColor="Gray" HasShadow="False">
+                                <StackLayout>
+                                    <Label Text="{Binding Title}" Style="{StaticResource ItemLabelStyle}" TextColor="White"/>
+                                    <Label Text="{Binding Amount, StringFormat='{0:C}'}" Style="{StaticResource AmountLabelStyle}"/>
+                                    <Label Text="{Binding Date, StringFormat='{0:MM/dd/yyyy}'}" Style="{StaticResource DateLabelStyle}"/>
+                                    <Label Text="{Binding Note}" Style="{StaticResource NoteLabelStyle}"/>
+                                </StackLayout>
+                            </Frame>
+
+                            <BoxView HeightRequest="1" Color="Gray" HorizontalOptions="FillAndExpand" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button Text="Go to Dashboard" Clicked="OnGoToDashboardClicked" 
+                    HorizontalOptions="Center" Margin="0,20,0,10"/>
+            <Label x:Name="CashInFlowError" TextColor="Red" IsVisible="False" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

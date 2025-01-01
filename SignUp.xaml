@@ -3,46 +3,109 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MoneyMap.SignUp"
              Title="Sign Up">
-    <VerticalStackLayout Padding="30" Spacing="20">
-        <!-- Welcome Label -->
-        <Label 
-            Text="Create your account"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" 
-            FontSize="24"/>
 
-        <!-- Full Name Entry -->
-        <Entry x:Name="FullNameEntry" 
-               Placeholder="Full Name"
-               Keyboard="Default"/>
+    <Grid BackgroundColor="White"
+          VerticalOptions="FillAndExpand"
+          HorizontalOptions="FillAndExpand">
 
-        <!-- Email Entry -->
-        <Entry x:Name="EmailEntry" 
-               Placeholder="Email"
-               Keyboard="Email"/>
-
-        <!-- Password Entry -->
-        <Entry x:Name="PasswordEntry" 
-               Placeholder="Password"
-               IsPassword="True"/>
-
-        <!-- Confirm Password Entry -->
-        <Entry x:Name="ConfirmPasswordEntry" 
-               Placeholder="Confirm Password"
-               IsPassword="True"/>
-
-        <!-- Sign Up Button -->
-        <Button Text="Sign Up" 
-                HorizontalOptions="Center" 
-                Clicked="OnSignUpClicked"/>
-
-        <!-- Login Text Link -->
-        <Label Text="Already have an account? Log In"
+        <Frame CornerRadius="10"
+               BackgroundColor="LightGray"
+               Padding="20"
+               WidthRequest="400"
+            VerticalOptions="Center"
                HorizontalOptions="Center"
-               TextColor="Blue">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnLoginTapped" />
-            </Label.GestureRecognizers>
-        </Label>
-    </VerticalStackLayout>
+               HasShadow="True">
+
+            <StackLayout Spacing="15">
+                <Label Text="Sign up"
+                       FontAttributes="Bold"
+                       FontSize="24"
+                       HorizontalTextAlignment="Center" />
+
+                <Label Text="Enter your details to create your account and get started"
+                       FontSize="12"
+                       TextColor="Gray"
+                       HorizontalTextAlignment="Center"/>
+
+                <!-- Full Name and Email Row -->
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Full Name -->
+                    <StackLayout>
+                        <Label Text="Full Name:" FontSize="12" />
+                        <Entry x:Name="FullNameEntry"
+                               Placeholder="Enter First name...."
+                               TextColor="Black"
+                               BackgroundColor="White"
+                               WidthRequest="180" />
+                    </StackLayout>
+
+                    <!-- Username -->
+                    <StackLayout Grid.Column="1">
+                        <Label Text="Username:" FontSize="12" />
+                        <Entry x:Name="UsernameEntry"
+                               Placeholder="Enter Username...."
+                               TextColor="Black"
+                               BackgroundColor="White"
+                               WidthRequest="180" />
+                    </StackLayout>
+                </Grid>
+
+                <!-- Password Row -->
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Password -->
+                    <StackLayout>
+                        <Label Text="Password:" FontSize="12" />
+                        <Entry x:Name="PasswordEntry"
+                               Placeholder="Enter password...."
+                               TextColor="Black"
+                               BackgroundColor="White"
+                               IsPassword="True"
+                               WidthRequest="180" />
+                    </StackLayout>
+
+                    <!-- Confirm Password -->
+                    <StackLayout Grid.Column="1">
+                        <Label Text="Confirm Password:" FontSize="12" />
+                        <Entry x:Name="ConfirmPasswordEntry"
+                               Placeholder="Enter Confirm password...."
+                               TextColor="Black"
+                               BackgroundColor="White"
+                               IsPassword="True"
+                               WidthRequest="180" />
+                    </StackLayout>
+                </Grid>
+
+                <!-- Sign Up Button -->
+                <Button Text="Confirm"
+                        BackgroundColor="Blue"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        HorizontalOptions="Center"
+                        WidthRequest="300" 
+                        HeightRequest="45"
+                        Clicked="OnSignUpClicked" />
+
+                    <!-- Login Text Link -->
+                    <Label Text="Already Have an account? Login"
+                       FontSize="12"
+                       HorizontalTextAlignment="Center"
+                       TextColor="Black">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLoginTapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                <Label x:Name="SignUpError" TextColor="Red" IsVisible="False" />
+            </StackLayout>
+        </Frame>
+    </Grid>
 </ContentPage>
