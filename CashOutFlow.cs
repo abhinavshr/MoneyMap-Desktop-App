@@ -13,5 +13,6 @@ namespace MoneyMap
         public decimal Amount { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
         public string Note { get; set; } = string.Empty;
+        public string Tags {  get; set; } = string.Empty ;
     }
 }

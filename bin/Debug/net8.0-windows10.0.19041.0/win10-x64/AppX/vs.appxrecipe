@@ -30,13 +30,13 @@
     <AppXManifest Include="C:\Users\abhin\source\repos\MoneyMap\MoneyMap\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2025-01-01T08:25:55.330</Modified>
+      <Modified>2025-01-02T15:19:48.569</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="C:\Users\abhin\source\repos\MoneyMap\MoneyMap\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2025-01-01T07:03:55.824</Modified>
+      <Modified>2025-01-02T07:02:38.958</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\abhin\source\repos\MoneyMap\MoneyMap\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\MoneyMap.runtimeconfig.json">
       <PackagePath>MoneyMap.runtimeconfig.json</PackagePath>
@@ -44,11 +44,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\abhin\source\repos\MoneyMap\MoneyMap\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\MoneyMap.dll">
       <PackagePath>MoneyMap.dll</PackagePath>
-      <Modified>2025-01-01T08:25:54.963</Modified>
+      <Modified>2025-01-02T15:19:47.253</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\abhin\source\repos\MoneyMap\MoneyMap\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\apphost.exe">
       <PackagePath>MoneyMap.exe</PackagePath>
-      <Modified>2025-01-01T08:25:54.968</Modified>
+      <Modified>2025-01-02T15:19:47.302</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\abhin\source\repos\MoneyMap\MoneyMap\Resources\Raw\AboutAssets.txt">
       <PackagePath>AboutAssets.txt</PackagePath>
@@ -288,7 +288,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\abhin\source\repos\MoneyMap\MoneyMap\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\MoneyMap.deps.json">
       <PackagePath>MoneyMap.deps.json</PackagePath>
-      <Modified>2025-01-01T07:03:55.643</Modified>
+      <Modified>2025-01-02T07:02:38.412</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\abhin\.nuget\packages\microsoft.windows.sdk.net.ref\10.0.19041.34\lib\net6.0\Microsoft.Windows.SDK.NET.dll">
       <PackagePath>Microsoft.Windows.SDK.NET.dll</PackagePath>

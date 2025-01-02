@@ -9,8 +9,8 @@ namespace MoneyMap
     {
         public ObservableCollection<CashInFlow> CashInflowsList { get; set; }
         public ObservableCollection<CashInFlow> FilteredCashInflowsList { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; } = DateTime.Now;
+        public DateTime StartDate { get; set; } = DateTime.Today;
+        public DateTime EndDate { get; set; } = DateTime.Today;
 
         public CashInflows()
         {
@@ -26,82 +26,45 @@ namespace MoneyMap
             LoadCashInflowsAsync();
         }
 
-        private void FilterCashInflows()
+        private void OnSearchTextChangedCustom(object sender, TextChangedEventArgs e)
         {
-            var filteredList = CashInflowsList
-                .Where(x => x.Date >= StartDate && x.Date <= EndDate)
-                .ToList();
+            var searchText = e.NewTextValue?.ToLower() ?? string.Empty;
 
+            // Clear and update the existing filtered collection
             FilteredCashInflowsList.Clear();
 
-            foreach (var item in filteredList)
-            {
-                FilteredCashInflowsList.Add(item);
-            }
-        }
+            var filteredList = string.IsNullOrEmpty(searchText)
+                ? CashInflowsList
+                : CashInflowsList.Where(inflow =>
+                      (!string.IsNullOrEmpty(inflow.Title) && inflow.Title.ToLower().Contains(searchText)) ||
+                      (!string.IsNullOrEmpty(inflow.Note) && inflow.Note.ToLower().Contains(searchText)));
 
-        private void OnStartDateChanged(object sender, DateChangedEventArgs e)
-        {
-            StartDate = e.NewDate;
-
-            if (EndDate < StartDate)
+            foreach (var inflow in filteredList)
             {
-                EndDate = StartDate;
+                FilteredCashInflowsList.Add(inflow);
             }
 
-            // Refresh filtered list
-            FilterCashInflows();
-        }
-
-        private void OnEndDateChanged(object sender, DateChangedEventArgs e)
-        {
-            EndDate = e.NewDate;
-            if (EndDate < StartDate)
-            {
-                EndDate = StartDate;
-            }
-
-            FilterCashInflows();
-        }
-
-        private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
-        {
-            var searchText = e.NewTextValue.ToLower();
-            if (string.IsNullOrEmpty(searchText))
-            {
-                FilteredCashInflowsList = new ObservableCollection<CashInFlow>(CashInflowsList);
-            }
-            else
-            {
-                var filteredList = CashInflowsList
-                    .Where(inflow => inflow.Title.ToLower().Contains(searchText) || inflow.Note.ToLower().Contains(searchText))
-                    .ToList();
-
-                FilteredCashInflowsList = new ObservableCollection<CashInFlow>(filteredList);
-            }
-
+            // Ensure the ListView is bound to the correct source
             CashInflowListView.ItemsSource = FilteredCashInflowsList;
         }
+
+
         private async void LoadCashInflowsAsync()
         {
             try
             {
                 var cashInflows = await DatabaseHelper.GetCashInflowsAsync();
 
-                Device.BeginInvokeOnMainThread(() =>
+                // Clear and populate the list
+                FilteredCashInflowsList.Clear();
+                foreach (var cashInFlow in cashInflows)
                 {
-                    CashInflowsList.Clear();
-                    foreach (var cashInFlow in cashInflows)
-                    {
-                        CashInflowsList.Add(cashInFlow);
-                    }
+                    FilteredCashInflowsList.Add(cashInFlow);
+                }
 
-                    CashInflowListView.ItemsSource = CashInflowsList;
-                });
-
+                // Automatically update the UI if it's bound to FilteredCashInflowsList
                 WriteCashInFlowError_log("Successfully loaded cash inflows.");
                 WriteCashInFlowError_log($"Fetched {cashInflows.Count} cash inflows.");
-
             }
             catch (Exception ex)
             {
@@ -110,9 +73,10 @@ namespace MoneyMap
         }
 
 
+
         private async void OnAddCashInflowClicked(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(TitleEntry.Text) || string.IsNullOrEmpty(AmountEntry.Text) || string.IsNullOrEmpty(NoteEntry.Text))
+            if (string.IsNullOrEmpty(TitleEntry.Text) || string.IsNullOrEmpty(AmountEntry.Text) || string.IsNullOrEmpty(TagsEntry.Text)  || string.IsNullOrEmpty(NoteEntry.Text))
             {
                 await DisplayAlert("Error", "Please fill in all.", "OK");
                 return;
@@ -129,7 +93,8 @@ namespace MoneyMap
                 Title = TitleEntry.Text,
                 Amount = amount,
                 Date = DateTime.Now,
-                Note = NoteEntry.Text
+                Note = NoteEntry.Text,
+                Tags = TagsEntry.Text
             };
 
             CashInflowsList.Add(newInflow);
@@ -141,6 +106,7 @@ namespace MoneyMap
             TitleEntry.Text = string.Empty;
             AmountEntry.Text = string.Empty;
             NoteEntry.Text = string.Empty;
+            TagsEntry.Text = string.Empty;
 
             try
             {
@@ -166,9 +132,9 @@ namespace MoneyMap
             }
         }
 
-        private async void OnGoToDashboardClicked(object sender, EventArgs e)
+        private async void OnGoToTransactionClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new DashboardPage());
+            await Navigation.PushAsync(new TransactionPage());
         }
 
         private static void WriteCashInFlowError_log(string message)

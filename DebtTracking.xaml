@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MoneyMap.DebtTracking"
+             Title="DebtTracking">
+    <!-- Wrap the entire content in ScrollView -->
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <Label 
+                Text="Debt Tracking"
+                FontSize="24"
+                FontAttributes="Bold"
+                HorizontalOptions="Center" />
+
+            <Label Text="Name" FontAttributes="Bold" />
+            <Entry x:Name="NameEntry" Placeholder="Enter Name" />
+
+            <Label Text="Amount" FontAttributes="Bold" />
+            <Entry x:Name="AmountEntry" Placeholder="Enter Amount" Keyboard="Numeric" />
+
+            <Label Text="Due Date" FontAttributes="Bold" />
+            <DatePicker x:Name="DueDatePicker" />
+
+            <Button Text="Add Debt" Clicked="OnAddDebtClicked" BackgroundColor="Green" TextColor="White" />
+
+            <Label Text="Amount to Clear" FontAttributes="Bold" />
+            <Entry x:Name="ClearAmountEntry" Placeholder="Enter Amount to Clear" Keyboard="Numeric" />
+
+            <Label x:Name="DebtTrackingError" TextColor="Red" IsVisible="False" />
+
+            <Button Text="Clear Debts" Clicked="OnClearDebtsClicked" BackgroundColor="Red" TextColor="White" />
+
+            <Label Text="Debt List:" FontAttributes="Bold" />
+            <CollectionView x:Name="DebtListView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Orientation="Horizontal" Spacing="10">
+                            <Label Text="{Binding Name}" FontAttributes="Bold" />
+                            <Label Text="{Binding Amount, StringFormat='{0:C}'}" />
+                            <Label Text="{Binding DueDate, StringFormat='Due: {0:MM/dd/yyyy}'}" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

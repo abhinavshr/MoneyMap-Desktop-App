@@ -46,6 +46,12 @@ build_metadata.AdditionalFiles.ManifestResourceName = MoneyMap.Dashboard.xaml
 build_metadata.AdditionalFiles.TargetPath = Dashboard.xaml
 build_metadata.AdditionalFiles.RelativePath = Dashboard.xaml
 
+[C:/Users/abhin/source/repos/MoneyMap/MoneyMap/DebtTracking.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = MoneyMap.DebtTracking.xaml
+build_metadata.AdditionalFiles.TargetPath = DebtTracking.xaml
+build_metadata.AdditionalFiles.RelativePath = DebtTracking.xaml
+
 [C:/Users/abhin/source/repos/MoneyMap/MoneyMap/login.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = MoneyMap.login.xaml
@@ -75,3 +81,9 @@ build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = MoneyMap.SignUp.xaml
 build_metadata.AdditionalFiles.TargetPath = SignUp.xaml
 build_metadata.AdditionalFiles.RelativePath = SignUp.xaml
+
+[C:/Users/abhin/source/repos/MoneyMap/MoneyMap/TransactionPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = MoneyMap.TransactionPage.xaml
+build_metadata.AdditionalFiles.TargetPath = TransactionPage.xaml
+build_metadata.AdditionalFiles.RelativePath = TransactionPage.xaml

@@ -15,10 +15,16 @@
     <MauiXaml Update="Dashboard.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
+    <MauiXaml Update="DebtTracking.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
     <MauiXaml Update="login.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
     <MauiXaml Update="SignUp.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
+    <MauiXaml Update="TransactionPage.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
   </ItemGroup>

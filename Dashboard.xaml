@@ -2,8 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MoneyMap.DashboardPage"
              Title="Dashboard">
+
     <ScrollView>
         <StackLayout Padding="10">
+            <!-- Navigation Buttons -->
+            <Button Text="Go to Transaction Page" Clicked="TransactionPageOnClicked" Margin="0,10" />
             <!-- Date Range Picker -->
             <Label Text="Filter by Date Range" FontSize="16" FontAttributes="Bold" Margin="0,10,0,0"/>
             <Grid ColumnDefinitions="*,*" RowSpacing="10" ColumnSpacing="10">
@@ -24,11 +27,6 @@
                 <Label Text="Remaining Debt:" Grid.Row="2" />
                 <Label x:Name="RemainingDebtLabel" Grid.Row="2" Grid.Column="1" />
             </Grid>
-
-            <!-- Navigation Buttons -->
-            <Button Text="Go to Cash Inflows" Clicked="OnCashInflowsPageClicked" Margin="0,10" />
-            <Button Text="Go to Cash Outflows" Clicked="OnCashOutflowsPageClicked" Margin="0,10" />
-            <Button Text="Go to Debt Tracking" Clicked="OnDebtTrackingPageClicked" Margin="0,10" />
 
             <!-- Transaction List -->
             <Label Text="Transactions" FontSize="18" FontAttributes="Bold" Margin="0,10,0,5"/>

@@ -28,23 +28,10 @@ namespace MoneyMap
             TransactionsList.ItemsSource = FilteredTransactions;
         }
 
-        // Navigation methods
-        private async void OnCashInflowsPageClicked(object sender, EventArgs e)
-        {
-            // Navigate to Cash Inflows page
-            await Navigation.PushAsync(new CashInflows());
-        }
-
-        private async void OnCashOutflowsPageClicked(object sender, EventArgs e)
-        {
-            // Navigate to Cash Outflows page
-            await Navigation.PushAsync(new CashOutflows());
-        }
-
-        private async void OnDebtTrackingPageClicked(object sender, EventArgs e)
+        private async void TransactionPageOnClicked(object sender, EventArgs e)
         {
             // Navigate to Debt Tracking page
-            await Shell.Current.GoToAsync("DebtTracking");
+            await Navigation.PushAsync(new TransactionPage());
         }
 
         // Apply filter based on date range

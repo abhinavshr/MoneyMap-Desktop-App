@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Formats.Tar;
 using System.Linq;
 using Microsoft.Maui.Controls;
 using MoneyMap.Data;
@@ -75,7 +76,7 @@ namespace MoneyMap
 
         private async void OnAddCashOutflowClicked(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(TitleEntry.Text) || string.IsNullOrEmpty(AmountEntry.Text) || string.IsNullOrEmpty(NoteEntry.Text))
+            if (string.IsNullOrEmpty(TitleEntry.Text) || string.IsNullOrEmpty(AmountEntry.Text) || string.IsNullOrEmpty(NoteEntry.Text) || string.IsNullOrEmpty(TagsEntry.Text))
             {
                 await DisplayAlert("Error", "Please fill in all fields.", "OK");
                 return;
@@ -110,7 +111,8 @@ namespace MoneyMap
                 Title = TitleEntry.Text,
                 Amount = amount,
                 Date = DateTime.Now,
-                Note = NoteEntry.Text
+                Note = NoteEntry.Text,
+                Tags = TagsEntry.Text
             };
 
             CashOutflowsList.Add(newOutflow);
@@ -122,6 +124,7 @@ namespace MoneyMap
             TitleEntry.Text = string.Empty;
             AmountEntry.Text = string.Empty;
             NoteEntry.Text = string.Empty;
+            TagsEntry.Text = string.Empty;
 
             try
             {
@@ -148,9 +151,9 @@ namespace MoneyMap
             FilterCashOutflows(CashOutflowSearchBar.Text);
         }
 
-        private async void OnDashboardButtonClicked(object sender, EventArgs e)
+        private async void OnGoToTransactionClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new DashboardPage());
+            await Navigation.PushAsync(new TransactionPage());
         }
 
         private static void WriteCashOutFlowError_log(string message)

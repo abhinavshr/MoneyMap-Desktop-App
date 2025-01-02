@@ -20,6 +20,7 @@ namespace MoneyMap.Data
         {
             CreateDatabase();
             CreateoutFlowDatabase();
+            CreateDebtTrackingDatabase();
             try
             {
                 WriteErrorInLog($"Database path: {dbPath}");
@@ -66,7 +67,8 @@ namespace MoneyMap.Data
                         Title TEXT, 
                         Amount REAL, 
                         Date TEXT,
-                        Note TEXT
+                        Note TEXT,
+                        Tags TEXT
                 )";
                     var cmd = connection.CreateCommand();
                     cmd.CommandText = createTableCmd;
@@ -101,7 +103,8 @@ namespace MoneyMap.Data
                         Title TEXT, 
                         Amount REAL, 
                         Date TEXT,
-                        Note TEXT
+                        Note TEXT,
+                        Tags TEXT
                 )";
                     var cmd = connection.CreateCommand();
                     cmd.CommandText = createTableCmd;
@@ -117,6 +120,43 @@ namespace MoneyMap.Data
             {
                 // Log general error
                 WriteCashOutFlowError_log($"Error creating database or table: {ex.Message}");
+            }
+        }
+
+        public static void CreateDebtTrackingDatabase()
+        {
+            try
+            {
+
+                // Open connection to the database
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+
+                    // Create the new DebtTracking table only if it doesn't exist
+                    var createTableCmd = @"
+                CREATE TABLE IF NOT EXISTS DebtTracking (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                    Name TEXT, 
+                    Amount REAL, 
+                    ClearedAmount REAL,
+                    DueDate TEXT
+                )";
+
+                    var cmd = connection.CreateCommand();
+                    cmd.CommandText = createTableCmd;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqliteException ex)
+            {
+                // Log SQLite error
+                WriteDebtTrackingError_log($"SQLite Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                // Log general error
+                WriteDebtTrackingError_log($"Error creating database or table: {ex.Message}");
             }
         }
 
@@ -163,7 +203,7 @@ namespace MoneyMap.Data
                 {
                     connection.Open();
 
-                    var insertCmd = "INSERT INTO CashInflow (Title, Amount, Date, Note) VALUES (@Title, @Amount, @Date, @Note)";
+                    var insertCmd = "INSERT INTO CashInflow (Title, Amount, Date, Note, Tags) VALUES (@Title, @Amount, @Date, @Note, @Tags)";
                     var cmd = connection.CreateCommand();
                     cmd.CommandText = insertCmd;
 
@@ -172,6 +212,7 @@ namespace MoneyMap.Data
                     cmd.Parameters.AddWithValue("@Amount", inflow.Amount);
                     cmd.Parameters.AddWithValue("@Date", inflow.Date.ToString("yyyy-MM-dd"));
                     cmd.Parameters.AddWithValue("@Note", inflow.Note);
+                    cmd.Parameters.AddWithValue("@Tags", inflow.Tags);
 
                     await cmd.ExecuteNonQueryAsync();
                 }
@@ -194,7 +235,7 @@ namespace MoneyMap.Data
                     await connection.OpenAsync();
 
                     // SQL command to insert data
-                    var insertCmd = "INSERT INTO CashOutflow (Title, Amount, Date, Note) VALUES (@Title, @Amount, @Date, @Note)";
+                    var insertCmd = "INSERT INTO CashOutflow (Title, Amount, Date, Note, Tags) VALUES (@Title, @Amount, @Date, @Note, @Tags)";
                     using (var cmd = connection.CreateCommand())
                     {
                         cmd.CommandText = insertCmd;
@@ -204,6 +245,7 @@ namespace MoneyMap.Data
                         cmd.Parameters.AddWithValue("@Amount", outflow.Amount);
                         cmd.Parameters.AddWithValue("@Date", outflow.Date.ToString("yyyy-MM-dd"));
                         cmd.Parameters.AddWithValue("@Note", outflow.Note);
+                        cmd.Parameters.AddWithValue("@Tags", outflow.Note);
 
                         // Execute the command
                         await cmd.ExecuteNonQueryAsync();
@@ -217,6 +259,41 @@ namespace MoneyMap.Data
             catch (Exception ex)
             {
                 WriteCashOutFlowError_log($"Error inserting cash outflow: {ex.Message}");
+            }
+        }
+
+        public static async Task InsertDebtTracking(DebtTrackings debt)
+        {
+            try
+            {
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    await connection.OpenAsync();
+                    var insertCmd = "INSERT INTO DebtTracking (Name, Amount, ClearedAmount, DueDate) VALUES (@Name, @Amount, @ClearedAmount, @DueDate)";
+                    using (var cmd = connection.CreateCommand())
+                    {
+                        cmd.CommandText = insertCmd;
+
+                        // Add parameters to prevent SQL injection
+                        cmd.Parameters.AddWithValue("@Name", debt.Name);
+                        cmd.Parameters.AddWithValue("@Amount", debt.Amount);
+                        cmd.Parameters.AddWithValue("@ClearedAmount", debt.ClearedAmount);
+                        cmd.Parameters.AddWithValue("@DueDate", debt.DueDate.ToString("yyyy-MM-dd"));
+
+                        // Execute the command
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (SqliteException ex)
+            {
+                // Log the SQLite error
+                WriteDebtTrackingError_log($"SQLite Error while inserting debt tracking record: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                // Log the general error
+                WriteDebtTrackingError_log($"Error inserting debt tracking record: {ex.Message}");
             }
         }
 
@@ -253,6 +330,46 @@ namespace MoneyMap.Data
             }
         }
 
+        //public static async Task<List<CashInFlow>> GetCashInflowsAsync()
+        //{
+        //    var cashInflows = new List<CashInFlow>();
+
+        //    try
+        //    {
+        //        using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+        //        {
+        //            await connection.OpenAsync();
+
+        //            var cmd = connection.CreateCommand();
+        //            cmd.CommandText = "SELECT Id, Title, Amount, Date, Note, Tags FROM CashInflow";
+
+        //            using (var reader = await cmd.ExecuteReaderAsync())
+        //            {
+        //                while (await reader.ReadAsync())
+        //                {
+        //                    var cashInFlow = new CashInFlow
+        //                    {
+        //                        Id = reader.GetInt32(0),
+        //                        Title = reader.GetString(1),
+        //                        Amount = reader.GetDecimal(2),
+        //                        Date = DateTime.Parse(reader.GetString(3)),
+        //                        Note = reader.GetString(4),
+        //                        Tags = reader.GetString(5)
+        //                    };
+
+        //                    cashInflows.Add(cashInFlow);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        WriteCashInFlowError_log($"Error fetching cash inflows: {ex.Message}");
+        //    }
+
+        //    return cashInflows;
+        //}
+
         public static async Task<List<CashInFlow>> GetCashInflowsAsync()
         {
             var cashInflows = new List<CashInFlow>();
@@ -264,7 +381,7 @@ namespace MoneyMap.Data
                     await connection.OpenAsync();
 
                     var cmd = connection.CreateCommand();
-                    cmd.CommandText = "SELECT Id, Title, Amount, Date, Note FROM CashInflow";
+                    cmd.CommandText = "SELECT Id, Title, Amount, Date, Note, Tags FROM CashInflow";
 
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
@@ -276,7 +393,8 @@ namespace MoneyMap.Data
                                 Title = reader.GetString(1),
                                 Amount = reader.GetDecimal(2),
                                 Date = DateTime.Parse(reader.GetString(3)),
-                                Note = reader.GetString(4)
+                                Note = reader.GetString(4),
+                                Tags = reader.GetString(5)
                             };
 
                             cashInflows.Add(cashInFlow);
@@ -303,7 +421,7 @@ namespace MoneyMap.Data
                     await connection.OpenAsync();
 
                     var cmd = connection.CreateCommand();
-                    cmd.CommandText = "SELECT Id, Title, Amount, Date, Note FROM CashOutflow";
+                    cmd.CommandText = "SELECT Id, Title, Amount, Date, Note, Tags FROM CashOutflow";
 
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
@@ -315,7 +433,8 @@ namespace MoneyMap.Data
                                 Title = reader.GetString(1),
                                 Amount = reader.GetDecimal(2),
                                 Date = DateTime.Parse(reader.GetString(3)),
-                                Note = reader.GetString(4)
+                                Note = reader.GetString(4),
+                                Tags = reader.GetString(5)
                             };
 
                             cashOutflows.Add(cashOutflow);
@@ -329,6 +448,53 @@ namespace MoneyMap.Data
             }
 
             return cashOutflows;
+        }
+
+        public static async Task<List<DebtTrackings>> GetDebtTrackingAsync()
+        {
+    var debtTrackings = new List<DebtTrackings>();
+
+    try
+    {
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+        {
+            await connection.OpenAsync();
+
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT Id, Name, Amount, ClearedAmount, DueDate FROM DebtTracking";
+
+            using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    Console.WriteLine($"Raw Amount: {reader.GetValue(2)}");
+                    Console.WriteLine($"Raw ClearedAmount: {reader.GetValue(3)}");
+
+                    var debtTracking = new DebtTrackings
+                    {
+                        Id = reader.GetInt32(0),
+                        Name = reader.GetString(1),
+                        Amount = reader.GetDecimal(2),
+                        ClearedAmount = reader.GetDecimal(3),
+                        DueDate = DateTime.Parse(reader.GetString(4))
+                    };
+
+                    debtTrackings.Add(debtTracking);
+                }
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log the error
+        WriteDebtTrackingError_log($"Error fetching debt tracking records: {ex.Message}");
+
+        // Re-throw the exception to let the caller handle it
+        throw;
+    }
+
+            return debtTrackings;
+            //return debtTrackingList;
         }
 
 
@@ -432,6 +598,29 @@ namespace MoneyMap.Data
             }
         }
 
+        private static void WriteDebtTrackingError_log(string message)
+        {
+            string logFilePath = Path.Combine("D:\\DotNetError", "log_debttracking_error.txt");
+
+            try
+            {
+                // Ensure the directory exists
+                string directoryPath = Path.GetDirectoryName(logFilePath);
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                // Write the log message to the file
+                File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
+            }
+            catch (Exception ex)
+            {
+                // Fallback for logging failure
+                Console.WriteLine($"Logging failed: {ex.Message}");
+            }
+        }
+
         public static async Task<decimal> GetTotalInflowAsync()
         {
             decimal total = 0;
@@ -474,6 +663,77 @@ namespace MoneyMap.Data
             return total;
         }
 
+        public static async Task<bool> ClearDebtAsync(decimal amount)
+        {
+            bool success = false;
+            try
+            {
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    await connection.OpenAsync();
+                    using (var transaction = await connection.BeginTransactionAsync())
+                    {
+                        try
+                        {
+                            var cmdDebt = connection.CreateCommand();
+                            cmdDebt.CommandText = "UPDATE DebtTracking SET Amount = Amount - @amount WHERE Amount >= @amount";
+                            cmdDebt.Parameters.AddWithValue("@amount", amount);
+
+                            int debtRowsAffected = await cmdDebt.ExecuteNonQueryAsync();
+
+                            if (debtRowsAffected > 0)
+                            {
+                                await transaction.CommitAsync();
+                                success = true;
+                            }
+                            else
+                            {
+                                await transaction.RollbackAsync();
+                            }
+                        }
+                        catch
+                        {
+                            await transaction.RollbackAsync();
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteDebtTrackingError_log($"Error clearing debt: {ex.Message}");
+            }
+            return success;
+        }
+
+        public static async Task<decimal> GetTotalDebtLeftAsync()
+        {
+            decimal totalDebtLeft = 0;
+            try
+            {
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    await connection.OpenAsync();
+                    var cmd = connection.CreateCommand();
+                    cmd.CommandText = "SELECT SUM(Amount) FROM DebtTracking";
+                    var result = await cmd.ExecuteScalarAsync();
+                    totalDebtLeft = result != DBNull.Value ? Convert.ToDecimal(result) : 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteDebtTrackingError_log($"Error calculating total debt left: {ex.Message}");
+            }
+            return totalDebtLeft;
+        }
+
+        // Get the total amount of debt that has been paid off
+        public static async Task<decimal> GetTotalDebtPaidAsync(decimal totalDebt)
+        {
+            decimal totalDebtLeft = await GetTotalDebtLeftAsync();
+            decimal totalDebtPaid = totalDebt - totalDebtLeft;
+            return totalDebtPaid;
+        }
 
     }
 }

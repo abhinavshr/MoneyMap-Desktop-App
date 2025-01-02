@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MoneyMap.TransactionPage"
+             Title="TransactionPage">
+    <ScrollView>
+        <VerticalStackLayout HorizontalOptions="Fill" Padding="10" Spacing="10" BackgroundColor="#F5F5F5">
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <Button Text="Go to Cash Inflows" Clicked="OnCashInflowsPageClicked" BackgroundColor="#4CAF50" TextColor="White" CornerRadius="10" />
+                <Button Text="Go to Cash Outflows" Clicked="OnCashOutflowsPageClicked" BackgroundColor="#FF5722" TextColor="White" CornerRadius="10" />
+                <Button Text="Go to Debt Tracking" Clicked="OnDebtTrackingPageClicked" BackgroundColor="#2196F3" TextColor="White" CornerRadius="10" />
+                <Button Text="Go to Dashboard" Clicked="OnDashboardPageClicked" BackgroundColor="#2196F3" TextColor="White" CornerRadius="10" />
+            </HorizontalStackLayout>
+
+            <SearchBar Placeholder="Search transactions..." TextChanged="OnSearchBarTextChanged" BackgroundColor="#E0E0E0" TextColor="Black" PlaceholderColor="Gray" />
+
+            <HorizontalStackLayout Spacing="10" Padding="10">
+                <Label Text="From:" VerticalOptions="Center" FontSize="16" TextColor="#333333" />
+                <DatePicker x:Name="FromDatePicker" 
+                TextColor="#333333" 
+                DateSelected="OnDateFilterChanged" />
+                <Label Text="To:" VerticalOptions="Center" FontSize="16" TextColor="#333333" />
+                <DatePicker x:Name="ToDatePicker" 
+                TextColor="#333333" 
+                DateSelected="OnDateFilterChanged" />
+            </HorizontalStackLayout>
+
+
+            <VerticalStackLayout Spacing="15">
+                <Label Text="Cash Inflows" FontSize="20" FontAttributes="Bold" TextColor="#4CAF50" />
+                <ListView x:Name="CashInflowsListView"
+                          ItemsSource="{Binding CashInflows}"
+                          HasUnevenRows="True"
+                          SeparatorVisibility="None"
+                          BackgroundColor="Transparent">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Frame Padding="10" Margin="10,5" CornerRadius="8" BorderColor="#BDBDBD" BackgroundColor="White" HasShadow="True">
+                                    <StackLayout>
+                                        <Label Text="{Binding Title}" 
+                                               FontSize="16" 
+                                               FontAttributes="Bold" 
+                                               TextColor="#333333" />
+                                        <Label Text="{Binding Amount, StringFormat='{0:C}'}" 
+                                               FontSize="16" 
+                                               FontAttributes="Bold" 
+                                               TextColor="#4CAF50" />
+                                        <Label Text="{Binding Date, StringFormat='{0:MM/dd/yyyy}'}" 
+                                               FontSize="14" 
+                                               TextColor="#757575" />
+                                        <Label Text="{Binding Note}" 
+                                               FontSize="14" 
+                                               TextColor="#757575" 
+                                               LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding Tags}" 
+                                               FontSize="14" 
+                                               TextColor="#757575" />
+                                    </StackLayout>
+                                </Frame>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <Label Text="Cash Outflows" 
+       FontSize="20" 
+       FontAttributes="Bold" 
+       TextColor="#FF5722" />
+
+                <ListView x:Name="CashOutflowsListView"
+          ItemsSource="{Binding CashOutflows}"
+          HasUnevenRows="True"
+          SeparatorVisibility="None"
+          BackgroundColor="Transparent">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Frame Padding="10" Margin="10,5" CornerRadius="8" BorderColor="#BDBDBD" BackgroundColor="White" HasShadow="True">
+                                    <StackLayout>
+                                        <Label Text="{Binding Title}" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               TextColor="#333333" />
+                                        <Label Text="{Binding Amount, StringFormat='{0:C}'}" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               TextColor="#FF5722" />
+                                        <Label Text="{Binding Date, StringFormat='{0:MM/dd/yyyy}'}" 
+                               FontSize="14" 
+                               TextColor="#757575" />
+                                        <Label Text="{Binding Note}" 
+                               FontSize="14" 
+                               TextColor="#757575" 
+                               LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding Tags}" 
+                               FontSize="14" 
+                               TextColor="#757575" />
+                                    </StackLayout>
+                                </Frame>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <Label Text="Debt Tracking" 
+       FontSize="20" 
+       FontAttributes="Bold" 
+       TextColor="#2196F3" />
+
+                <ListView x:Name="DebtTrackingListView"
+          ItemsSource="{Binding DebtTracking}"
+          HasUnevenRows="True"
+          SeparatorVisibility="None"
+          BackgroundColor="Transparent">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Frame Padding="10" Margin="10,5" CornerRadius="8" BorderColor="#BDBDBD" BackgroundColor="White" HasShadow="True">
+                                    <StackLayout>
+                                        <Label Text="{Binding Name}" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               TextColor="#333333" />
+                                        <Label Text="{Binding Amount, StringFormat='{0:C}'}" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               TextColor="#2196F3" />
+                                        <Label Text="{Binding DueDate, StringFormat='{0:MM/dd/yyyy}'}" 
+                               FontSize="14" 
+                               TextColor="#757575" />
+                                    </StackLayout>
+                                </Frame>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
