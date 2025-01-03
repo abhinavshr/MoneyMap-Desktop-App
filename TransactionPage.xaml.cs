@@ -11,15 +11,55 @@ namespace MoneyMap
     {
         private static readonly string DbPath = Path.Combine(FileSystem.AppDataDirectory, "moneyapp.db");
 
+        private System.Timers.Timer _refreshTimer;
+
         public ObservableCollection<CashInFlow> CashInflows { get; set; } = new();
         public ObservableCollection<CashOutFlow> CashOutflows { get; set; } = new();
         public ObservableCollection<DebtTrackings> DebtTracking { get; set; } = new();
+        public ObservableCollection<CashInFlow> LowestCashInflows { get; set; } = new();
+        public ObservableCollection<CashOutFlow> LowestCashOutflows { get; set; } = new();
+        public ObservableCollection<DebtTrackings> LowestDebtTracking { get; set; } = new();
+
 
         public TransactionPage()
         {
             InitializeComponent();
             LoadDataAsync();
+            InitializeAutoRefresh();
             BindingContext = this;
+        }
+
+        private void InitializeAutoRefresh()
+        {
+            _refreshTimer = new System.Timers.Timer
+            {
+                Interval = 60000, // 1 minute in milliseconds
+                AutoReset = true,
+                Enabled = true
+            };
+            _refreshTimer.Elapsed += async (s, e) => await LoadDataAsyncWrapper();
+        }
+
+        private void StopAutoRefresh()
+        {
+            if (_refreshTimer != null)
+            {
+                _refreshTimer.Stop();
+                _refreshTimer.Dispose();
+                _refreshTimer = null;
+            }
+        }
+
+        private async Task LoadDataAsyncWrapper()
+        {
+            try
+            {
+                MainThread.BeginInvokeOnMainThread(() => LoadDataAsync());
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"Error in LoadDataAsyncWrapper: {ex.Message}");
+            }
         }
 
         private async void LoadDataAsync()
@@ -32,42 +72,68 @@ namespace MoneyMap
 
                 if (inflows?.Any() == true)
                 {
+                    // Show top 3 highest inflows
                     CashInflows.Clear();
-                    var lastInflows = inflows.OrderByDescending(i => i.Id).Take(3); // Assuming Id determines the order
-                    foreach (var inflow in lastInflows)
+                    var topInflows = inflows.OrderByDescending(i => i.Amount).Take(3);
+                    foreach (var inflow in topInflows)
                     {
                         CashInflows.Add(inflow);
+                    }
+
+                    // Show top 3 lowest inflows
+                    LowestCashInflows.Clear();
+                    var lowestInflows = inflows.OrderBy(i => i.Amount).Take(3);
+                    foreach (var inflow in lowestInflows)
+                    {
+                        LowestCashInflows.Add(inflow);
                     }
                 }
 
                 if (outflows?.Any() == true)
                 {
+                    // Show top 3 highest outflows
                     CashOutflows.Clear();
-                    var lastOutflows = outflows.OrderByDescending(o => o.Id).Take(3); // Assuming Id determines the order
-                    foreach (var outflow in lastOutflows)
+                    var topOutflows = outflows.OrderByDescending(o => o.Amount).Take(3);
+                    foreach (var outflow in topOutflows)
                     {
                         CashOutflows.Add(outflow);
+                    }
+
+                    // Show top 3 lowest outflows
+                    LowestCashOutflows.Clear();
+                    var lowestOutflows = outflows.OrderBy(o => o.Amount).Take(3);
+                    foreach (var outflow in lowestOutflows)
+                    {
+                        LowestCashOutflows.Add(outflow);
                     }
                 }
 
                 if (debtTrackings?.Any() == true)
                 {
+                    // Show top 3 highest debts
                     DebtTracking.Clear();
-                    var lastDebts = debtTrackings.OrderByDescending(d => d.Id).Take(3); // Assuming Id determines the order
-                    foreach (var debt in lastDebts)
+                    var topDebts = debtTrackings.OrderByDescending(d => d.Amount).Take(3);
+                    foreach (var debt in topDebts)
                     {
                         DebtTracking.Add(debt);
                     }
-                }
 
-                LogMessage($"Data Loaded: Inflows={CashInflows.Count}, Outflows={CashOutflows.Count}, DebtTrackings={DebtTracking.Count}");
+                    // Show top 3 lowest debts
+                    LowestDebtTracking.Clear();
+                    var lowestDebts = debtTrackings.OrderBy(d => d.Amount).Take(3);
+                    foreach (var debt in lowestDebts)
+                    {
+                        LowestDebtTracking.Add(debt);
+                    }
+                }
             }
             catch (Exception ex)
             {
-                LogMessage($"Error loading data: {ex.Message}");
-                await DisplayAlert("Error", "Failed to load data.", "OK");
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
+
+
 
 
         private void OnSearchBarTextChanged(object sender, TextChangedEventArgs e)
@@ -80,22 +146,38 @@ namespace MoneyMap
                 var filteredInflows = CashInflows.Where(c => c.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 CashInflowsListView.ItemsSource = new ObservableCollection<CashInFlow>(filteredInflows);
 
+                // Filter LowestCashInflows
+                var filteredLowestInflows = LowestCashInflows.Where(c => c.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+                LowestCashInflowsListView.ItemsSource = new ObservableCollection<CashInFlow>(filteredLowestInflows);
+
                 // Filter CashOutflows
                 var filteredOutflows = CashOutflows.Where(c => c.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 CashOutflowsListView.ItemsSource = new ObservableCollection<CashOutFlow>(filteredOutflows);
 
+                // Filter LowestCashOutflows
+                var filteredLowestOutflows = LowestCashOutflows.Where(c => c.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+                LowestCashOutflowsListView.ItemsSource = new ObservableCollection<CashOutFlow>(filteredLowestOutflows);
+
                 // Filter DebtTracking
                 var filteredDebts = DebtTracking.Where(d => d.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 DebtTrackingListView.ItemsSource = new ObservableCollection<DebtTrackings>(filteredDebts);
+
+                // Filter LowestDebtTracking
+                var filteredLowestDebts = LowestDebtTracking.Where(d => d.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+                LowestDebtTrackingListView.ItemsSource = new ObservableCollection<DebtTrackings>(filteredLowestDebts);
             }
             else
             {
                 // Reset to original lists when search is cleared
                 CashInflowsListView.ItemsSource = CashInflows;
+                LowestCashInflowsListView.ItemsSource = LowestCashInflows;
                 CashOutflowsListView.ItemsSource = CashOutflows;
+                LowestCashOutflowsListView.ItemsSource = LowestCashOutflows;
                 DebtTrackingListView.ItemsSource = DebtTracking;
+                LowestDebtTrackingListView.ItemsSource = LowestDebtTracking;
             }
         }
+
 
         private void OnDateFilterChanged(object sender, DateChangedEventArgs e)
         {
@@ -107,24 +189,37 @@ namespace MoneyMap
             var fromDate = FromDatePicker.Date;
             var toDate = ToDatePicker.Date;
 
-            // Filter and sort inflows by date
             var filteredInflows = CashInflows
                 .Where(c => c.Date.Date >= fromDate && c.Date.Date <= toDate)
                 .OrderBy(c => c.Date);
             CashInflowsListView.ItemsSource = new ObservableCollection<CashInFlow>(filteredInflows);
 
-            // Filter and sort outflows by date
+            var filteredLowestInflows = LowestCashInflows
+                .Where(c => c.Date.Date >= fromDate && c.Date.Date <= toDate)
+                .OrderBy(c => c.Date);
+            LowestCashInflowsListView.ItemsSource = new ObservableCollection<CashInFlow>(filteredLowestInflows);
+
             var filteredOutflows = CashOutflows
                 .Where(c => c.Date.Date >= fromDate && c.Date.Date <= toDate)
                 .OrderBy(c => c.Date);
             CashOutflowsListView.ItemsSource = new ObservableCollection<CashOutFlow>(filteredOutflows);
 
-            // Filter and sort debt tracking by due date
+            var filteredLowestOutflows = LowestCashOutflows
+                .Where(c => c.Date.Date >= fromDate && c.Date.Date <= toDate)
+                .OrderBy(c => c.Date);
+            LowestCashOutflowsListView.ItemsSource = new ObservableCollection<CashOutFlow>(filteredLowestOutflows);
+
             var filteredDebts = DebtTracking
                 .Where(d => d.DueDate.Date >= fromDate && d.DueDate.Date <= toDate)
                 .OrderBy(d => d.DueDate);
             DebtTrackingListView.ItemsSource = new ObservableCollection<DebtTrackings>(filteredDebts);
+
+            var filteredLowestDebts = LowestDebtTracking
+                .Where(d => d.DueDate.Date >= fromDate && d.DueDate.Date <= toDate)
+                .OrderBy(d => d.DueDate);
+            LowestDebtTrackingListView.ItemsSource = new ObservableCollection<DebtTrackings>(filteredLowestDebts);
         }
+
 
 
         private async void OnCashInflowsPageClicked(object sender, EventArgs e)
