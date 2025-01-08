@@ -40,9 +40,6 @@ namespace MoneyMap
             }
         }
 
-
-
-
         private async void OnAddDebtClicked(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(NameEntry.Text) || string.IsNullOrWhiteSpace(AmountEntry.Text) || !decimal.TryParse(AmountEntry.Text, out var amount))
@@ -106,19 +103,29 @@ namespace MoneyMap
 
                     if (isDebtCleared)
                     {
-                        // Calculate total debt paid and remaining debt after clearing
-                        decimal totalDebtPaid = await DatabaseHelper.GetTotalDebtPaidAsync(totalDebtLeft + clearedAmount);
-                        decimal remainingDebt = totalDebtLeft - clearedAmount;
+                        // Update the DebtTracking table
+                        bool isUpdated = await DatabaseHelper.UpdateDebtTrackingClearedAmountAsync(clearedAmount);
 
-                        // Show total debt paid and remaining debt after clearing
-                        await DisplayAlert("Debt Cleared",
-                            $"Debt cleared successfully.\n\n" +
-                            $"Total Debt To Pay: {totalDebtPaid:C}\n" +
-                            $"Remaining Debt: {remainingDebt:C}",
-                            "OK");
+                        if (isUpdated)
+                        {
+                            // Calculate total debt paid
+                            decimal totalDebtPaid = await DatabaseHelper.GetTotalDebtPaidAsync(totalDebtLeft);
+                            decimal remainingDebt = totalDebtLeft - clearedAmount;
 
-                        // Optionally reset ClearAmountEntry
-                        ClearAmountEntry.Text = string.Empty;
+                            // Show total debt paid and remaining debt after clearing
+                            await DisplayAlert("Debt Cleared",
+                                $"Debt cleared successfully.\n\n" +
+                                $"Total Debt Paid: {totalDebtPaid:C}\n" +
+                                $"Remaining Debt: {remainingDebt:C}",
+                                "OK");
+
+                            // Optionally reset ClearAmountEntry
+                            ClearAmountEntry.Text = string.Empty;
+                        }
+                        else
+                        {
+                            await DisplayAlert("Error", "Failed to update the DebtTracking table. Please try again.", "OK");
+                        }
                     }
                     else
                     {

@@ -66,7 +66,8 @@
             <Button Text="Add Inflow" Clicked="OnAddCashInflowClicked" 
                     HorizontalOptions="Center" Margin="0,20,0,10"/>
 
-            <!-- Search Bar for searching through cash inflows -->
+            <Label x:Name="CashInFlowError" TextColor="Red" IsVisible="False" />
+
             <SearchBar x:Name="OnSearchBarTextChanged"
            Placeholder="Search Cash Inflows"
            TextChanged="OnSearchTextChangedCustom"
@@ -99,7 +100,6 @@
 
             <Button Text="Go to Transaction" Clicked="OnGoToTransactionClicked" 
                     HorizontalOptions="Center" Margin="0,20,0,10"/>
-            <Label x:Name="CashInFlowError" TextColor="Red" IsVisible="False" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -1,40 +1,104 @@
 using System;
 using System.Linq;
 using System.Collections.ObjectModel;
-using Microsoft.Maui.Controls;
+using MoneyMap.Data;
+using Microsoft.Data.Sqlite;
 
 namespace MoneyMap
 {
     public partial class DashboardPage : ContentPage
     {
-        // Sample data
-        private ObservableCollection<Transaction> _allTransactions;
-        public ObservableCollection<Transaction> FilteredTransactions { get; set; }
+        private static readonly string dbPath = Path.Combine(FileSystem.AppDataDirectory, "moneyapp.db");
 
         public DashboardPage()
         {
             InitializeComponent();
 
-            // Initialize sample data
-            _allTransactions = new ObservableCollection<Transaction>
-            {
-                new Transaction { Title = "Salary", Amount = 5000, Date = new DateTime(2024, 12, 1), Type = "Inflow" },
-                new Transaction { Title = "Groceries", Amount = -200, Date = new DateTime(2024, 12, 3), Type = "Outflow" },
-                new Transaction { Title = "Loan Payment", Amount = -1000, Date = new DateTime(2024, 12, 5), Type = "Debt" },
-            };
+        }
 
-            // FilteredTransactions is initially set to show all transactions
-            FilteredTransactions = new ObservableCollection<Transaction>(_allTransactions);
-            TransactionsList.ItemsSource = FilteredTransactions;
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            await LoadDashboardDataAsync();
         }
 
         private async void TransactionPageOnClicked(object sender, EventArgs e)
         {
-            // Navigate to Debt Tracking page
             await Navigation.PushAsync(new TransactionPage());
         }
 
-        // Apply filter based on date range
+        private async Task LoadDashboardDataAsync()
+        {
+            try
+            {
+                // Fetch metrics
+                var totalInflows = await DatabaseHelper.GetTotalInflowAsync();
+                var totalOutflows = await DatabaseHelper.GetTotalOutflowAsync();
+                var totalDebtLeft = await DatabaseHelper.GetTotalDebtLeftAsync();
+                var totalDebtPaid = await DatabaseHelper.GetTotalClearedAmountAsync();
+                var totalnumberoftransaction = DatabaseHelper.CalculateTotalTransactions();
+
+                // Update labels with fetched data
+                TotalInflowsLabel.Text = totalInflows.ToString("C");
+                TotalOutflowsLabel.Text = totalOutflows.ToString("C");
+                RemainingDebtLabel.Text = totalDebtLeft.ToString("C");
+                ClearedDebtLabel.Text = totalDebtPaid.ToString("C");
+                TotalTransactionsLabel.Text = (totalInflows - totalOutflows + totalDebtLeft).ToString("C");
+                TotalTransactionsCountLabel.Text = totalnumberoftransaction.ToString();
+
+
+                // Load pending debts
+                var pendingDebts = await GetPendingDebtsAsync();
+                PendingDebtsList.ItemsSource = pendingDebts;
+
+            }
+            catch (Exception ex)
+            {
+                // Handle errors gracefully
+                Console.WriteLine($"Error loading dashboard data: {ex.Message}");
+                await DisplayAlert("Error", "Failed to load dashboard data. Please try again later.", "OK");
+            }
+        }
+
+        private async Task<ObservableCollection<DebtTrackings>> GetPendingDebtsAsync()
+        {
+            var pendingDebts = new ObservableCollection<DebtTrackings>();
+            try
+            {
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    await connection.OpenAsync();
+
+                    // Query to fetch debts with ClearedAmount = 0
+                    string query = "SELECT Id, Name, Amount, ClearedAmount, DueDate FROM DebtTracking WHERE ClearedAmount = 0";
+                    using (var command = new SqliteCommand(query, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                var debt = new DebtTrackings
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Amount = reader.GetDecimal(2),
+                                    ClearedAmount = reader.GetDecimal(3),
+                                    DueDate = reader.GetDateTime(4)
+                                };
+                                pendingDebts.Add(debt);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                updateDebtTracking($"Error fetching pending debts: {ex}");
+            }
+
+            return pendingDebts;
+        }
+
         private void OnApplyFilterClicked(object sender, EventArgs e)
         {
             var startDate = StartDatePicker.Date;
@@ -45,39 +109,31 @@ namespace MoneyMap
                 DisplayAlert("Error", "Start date must be earlier than end date.", "OK");
                 return;
             }
-
-            FilteredTransactions.Clear();
-            foreach (var transaction in _allTransactions)
-            {
-                if (transaction.Date >= startDate && transaction.Date <= endDate)
-                {
-                    FilteredTransactions.Add(transaction);
-                }
-            }
-
-            // Update the summary after filtering
-            UpdateSummary();
         }
-
-        // Update the metrics (Total Inflows, Outflows, and Remaining Debt)
-        private void UpdateSummary()
+        private static void updateDebtTracking(string message)
         {
-            var totalInflows = FilteredTransactions.Where(t => t.Type == "Inflow").Sum(t => t.Amount);
-            var totalOutflows = FilteredTransactions.Where(t => t.Type == "Outflow").Sum(t => t.Amount);
-            var remainingDebt = FilteredTransactions.Where(t => t.Type == "Debt").Sum(t => t.Amount);
+            string logFilePath = Path.Combine("D:\\DotNetError", "Upadte_DebtTracking.txt");
 
-            TotalInflowsLabel.Text = $"{totalInflows:C}";
-            TotalOutflowsLabel.Text = $"{totalOutflows:C}";
-            RemainingDebtLabel.Text = $"{remainingDebt:C}";
+            try
+            {
+                // Ensure the directory exists
+                string directoryPath = Path.GetDirectoryName(logFilePath);
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                // Write the log message to the file
+                File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
+            }
+            catch (Exception ex)
+            {
+                // Fallback for logging failure
+                Console.WriteLine($"Logging failed: {ex.Message}");
+            }
         }
+
+
     }
 
-    // Transaction class to represent each transaction
-    public class Transaction
-    {
-        public string Title { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime Date { get; set; }
-        public string Type { get; set; }
-    }
 }

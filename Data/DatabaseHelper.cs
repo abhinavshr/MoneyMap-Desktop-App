@@ -11,7 +11,6 @@ namespace MoneyMap.Data
 
         static DatabaseHelper()
         {
-            // Initialize SQLite Batteries
             Batteries.Init();
         }
 
@@ -207,11 +206,10 @@ namespace MoneyMap.Data
                     var cmd = connection.CreateCommand();
                     cmd.CommandText = insertCmd;
 
-                    // Add parameters to prevent SQL injection
                     cmd.Parameters.AddWithValue("@Title", inflow.Title);
                     cmd.Parameters.AddWithValue("@Amount", inflow.Amount);
                     cmd.Parameters.AddWithValue("@Date", inflow.Date.ToString("yyyy-MM-dd"));
-                    cmd.Parameters.AddWithValue("@Note", inflow.Note);
+                    cmd.Parameters.AddWithValue("@Note", inflow.Note ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Tags", inflow.Tags);
 
                     await cmd.ExecuteNonQueryAsync();
@@ -244,8 +242,8 @@ namespace MoneyMap.Data
                         cmd.Parameters.AddWithValue("@Title", outflow.Title);
                         cmd.Parameters.AddWithValue("@Amount", outflow.Amount);
                         cmd.Parameters.AddWithValue("@Date", outflow.Date.ToString("yyyy-MM-dd"));
-                        cmd.Parameters.AddWithValue("@Note", outflow.Note);
-                        cmd.Parameters.AddWithValue("@Tags", outflow.Note);
+                        cmd.Parameters.AddWithValue("@Note", outflow.Note ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Tags", outflow.Tags);
 
                         // Execute the command
                         await cmd.ExecuteNonQueryAsync();
@@ -330,46 +328,6 @@ namespace MoneyMap.Data
             }
         }
 
-        //public static async Task<List<CashInFlow>> GetCashInflowsAsync()
-        //{
-        //    var cashInflows = new List<CashInFlow>();
-
-        //    try
-        //    {
-        //        using (var connection = new SqliteConnection($"Data Source={dbPath}"))
-        //        {
-        //            await connection.OpenAsync();
-
-        //            var cmd = connection.CreateCommand();
-        //            cmd.CommandText = "SELECT Id, Title, Amount, Date, Note, Tags FROM CashInflow";
-
-        //            using (var reader = await cmd.ExecuteReaderAsync())
-        //            {
-        //                while (await reader.ReadAsync())
-        //                {
-        //                    var cashInFlow = new CashInFlow
-        //                    {
-        //                        Id = reader.GetInt32(0),
-        //                        Title = reader.GetString(1),
-        //                        Amount = reader.GetDecimal(2),
-        //                        Date = DateTime.Parse(reader.GetString(3)),
-        //                        Note = reader.GetString(4),
-        //                        Tags = reader.GetString(5)
-        //                    };
-
-        //                    cashInflows.Add(cashInFlow);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        WriteCashInFlowError_log($"Error fetching cash inflows: {ex.Message}");
-        //    }
-
-        //    return cashInflows;
-        //}
-
         public static async Task<List<CashInFlow>> GetCashInflowsAsync()
         {
             var cashInflows = new List<CashInFlow>();
@@ -393,7 +351,7 @@ namespace MoneyMap.Data
                                 Title = reader.GetString(1),
                                 Amount = reader.GetDecimal(2),
                                 Date = DateTime.Parse(reader.GetString(3)),
-                                Note = reader.GetString(4),
+                                Note = reader.IsDBNull(4) ? null : reader.GetString(4),
                                 Tags = reader.GetString(5)
                             };
 
@@ -433,7 +391,7 @@ namespace MoneyMap.Data
                                 Title = reader.GetString(1),
                                 Amount = reader.GetDecimal(2),
                                 Date = DateTime.Parse(reader.GetString(3)),
-                                Note = reader.GetString(4),
+                                Note = reader.IsDBNull(4) ? null : reader.GetString(4),
                                 Tags = reader.GetString(5)
                             };
 
@@ -733,6 +691,158 @@ namespace MoneyMap.Data
             decimal totalDebtLeft = await GetTotalDebtLeftAsync();
             decimal totalDebtPaid = totalDebt - totalDebtLeft;
             return totalDebtPaid;
+        }
+
+        public static async Task<bool> UpdateDebtTrackingClearedAmountAsync(decimal clearedAmount)
+        {
+            try
+            {
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+
+                    // Update the ClearedAmount column in the DebtTracking table
+                    string query = "UPDATE DebtTracking SET ClearedAmount = ClearedAmount + @ClearedAmount WHERE Id = 1";
+                    using (var command = new SqliteCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ClearedAmount", clearedAmount);
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+                        return rowsAffected > 0; // Return true if rows were updated
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                updateDebtTracking($"Error updating DebtTracking table: {ex}");
+                return false; // Return false if an error occurs
+            }
+        }
+
+
+        
+        public static async Task<decimal> GetTotalClearedAmountAsync()
+        {
+            try
+            {
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+
+                    // Query to calculate the total ClearedAmount
+                    string query = "SELECT SUM(ClearedAmount) FROM DebtTracking";
+                    using (var command = new SqliteCommand(query, connection))
+                    {
+                        object result = await command.ExecuteScalarAsync();
+                        // Return the result or 0 if null
+                        return result != DBNull.Value ? Convert.ToDecimal(result) : 0m;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                updateDebtTracking($"Error calculating total ClearedAmount: {ex}");
+                return 0m; // Return 0 if an error occurs
+            }
+        }
+
+        public static int CalculateTotalTransactions()
+        {
+            int inflowCount = 0;
+            int outflowCount = 0;
+            int debtCount = 0;
+
+            try
+            {
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+
+                    // Query for the number of transactions in CashInflow
+                    using (var inflowCmd = connection.CreateCommand())
+                    {
+                        inflowCmd.CommandText = "SELECT COUNT(*) FROM CashInflow";
+                        var result = inflowCmd.ExecuteScalar();
+                        inflowCount = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                    }
+
+                    // Query for the number of transactions in CashOutflow
+                    using (var outflowCmd = connection.CreateCommand())
+                    {
+                        outflowCmd.CommandText = "SELECT COUNT(*) FROM CashOutflow";
+                        var result = outflowCmd.ExecuteScalar();
+                        outflowCount = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                    }
+
+                    // Query for the number of debts with remaining balances
+                    using (var debtCmd = connection.CreateCommand())
+                    {
+                        debtCmd.CommandText = "SELECT COUNT(*) FROM DebtTracking WHERE (Amount - ClearedAmount) > 0";
+                        var result = debtCmd.ExecuteScalar();
+                        debtCount = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                    }
+                }
+            }
+            catch (SqliteException ex)
+            {
+                calculate($"SQLite Error calculating total transactions count: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                calculate($"Error calculating total transactions count: {ex.Message}");
+            }
+
+            // Calculate total number of transactions
+            int totalTransactions = inflowCount + outflowCount + debtCount;
+            calculate($"Total number of transactions calculated: {totalTransactions}");
+            return totalTransactions;
+        }
+
+
+
+        private static void updateDebtTracking(string message)
+        {
+            string logFilePath = Path.Combine("D:\\DotNetError", "Upadte_DebtTracking.txt");
+
+            try
+            {
+                // Ensure the directory exists
+                string directoryPath = Path.GetDirectoryName(logFilePath);
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                // Write the log message to the file
+                File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
+            }
+            catch (Exception ex)
+            {
+                // Fallback for logging failure
+                Console.WriteLine($"Logging failed: {ex.Message}");
+            }
+        }
+
+        private static void calculate(string message)
+        {
+            string logFilePath = Path.Combine("D:\\DotNetError", "calculate.txt");
+
+            try
+            {
+                // Ensure the directory exists
+                string directoryPath = Path.GetDirectoryName(logFilePath);
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                // Write the log message to the file
+                File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
+            }
+            catch (Exception ex)
+            {
+                // Fallback for logging failure
+                Console.WriteLine($"Logging failed: {ex.Message}");
+            }
         }
 
     }

@@ -142,33 +142,26 @@ namespace MoneyMap
 
             if (!string.IsNullOrWhiteSpace(searchText))
             {
-                // Filter CashInflows
                 var filteredInflows = CashInflows.Where(c => c.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 CashInflowsListView.ItemsSource = new ObservableCollection<CashInFlow>(filteredInflows);
 
-                // Filter LowestCashInflows
                 var filteredLowestInflows = LowestCashInflows.Where(c => c.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 LowestCashInflowsListView.ItemsSource = new ObservableCollection<CashInFlow>(filteredLowestInflows);
 
-                // Filter CashOutflows
                 var filteredOutflows = CashOutflows.Where(c => c.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 CashOutflowsListView.ItemsSource = new ObservableCollection<CashOutFlow>(filteredOutflows);
 
-                // Filter LowestCashOutflows
                 var filteredLowestOutflows = LowestCashOutflows.Where(c => c.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 LowestCashOutflowsListView.ItemsSource = new ObservableCollection<CashOutFlow>(filteredLowestOutflows);
 
-                // Filter DebtTracking
                 var filteredDebts = DebtTracking.Where(d => d.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 DebtTrackingListView.ItemsSource = new ObservableCollection<DebtTrackings>(filteredDebts);
 
-                // Filter LowestDebtTracking
                 var filteredLowestDebts = LowestDebtTracking.Where(d => d.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 LowestDebtTrackingListView.ItemsSource = new ObservableCollection<DebtTrackings>(filteredLowestDebts);
             }
             else
             {
-                // Reset to original lists when search is cleared
                 CashInflowsListView.ItemsSource = CashInflows;
                 LowestCashInflowsListView.ItemsSource = LowestCashInflows;
                 CashOutflowsListView.ItemsSource = CashOutflows;

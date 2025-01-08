@@ -76,7 +76,7 @@ namespace MoneyMap
 
         private async void OnAddCashInflowClicked(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(TitleEntry.Text) || string.IsNullOrEmpty(AmountEntry.Text) || string.IsNullOrEmpty(TagsEntry.Text)  || string.IsNullOrEmpty(NoteEntry.Text))
+            if (string.IsNullOrEmpty(TitleEntry.Text) || string.IsNullOrEmpty(AmountEntry.Text) || string.IsNullOrEmpty(TagsEntry.Text))
             {
                 await DisplayAlert("Error", "Please fill in all.", "OK");
                 return;
