@@ -1,59 +1,142 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MoneyMap.DashboardPage"
-             Title="Dashboard">
+             Title="Dashboard"
+             BackgroundColor="White">
 
     <ScrollView>
-        <StackLayout Padding="10">
-            <!-- Navigation Buttons -->
-            <Button Text="Go to Transaction Page" Clicked="TransactionPageOnClicked" Margin="0,10" />
+        <VerticalStackLayout Padding="10" Spacing="10">
+            <Button Text="Go to Transaction Page" 
+                    Clicked="TransactionPageOnClicked" 
+                    Margin="0,10" 
+                    BackgroundColor="#007BFF" 
+                    TextColor="White"/>
 
-            <!-- Date Range Picker -->
-            <Label Text="Filter by Date Range" FontSize="16" FontAttributes="Bold" Margin="0,10,0,0"/>
-            <Grid ColumnDefinitions="*,*" RowSpacing="10" ColumnSpacing="10">
-                <DatePicker x:Name="StartDatePicker" />
-                <DatePicker x:Name="EndDatePicker" Grid.Column="1" />
-            </Grid>
-            <Button Text="Apply Filter" Clicked="OnApplyFilterClicked" Margin="0,10,0,10" />
-
-            <!-- Metrics Overview -->
-            <Label Text="Metrics Overview" FontSize="18" FontAttributes="Bold" Margin="0,10,0,5"/>
-            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="10" ColumnSpacing="10">
-                <Label Text="Total Inflows:" />
-                <Label x:Name="TotalInflowsLabel" Grid.Column="1" />
-
-                <Label Text="Total Outflows:" Grid.Row="1" />
-                <Label x:Name="TotalOutflowsLabel" Grid.Row="1" Grid.Column="1" />
-
-                <Label Text="Remaining Debt:" Grid.Row="2" />
-                <Label x:Name="RemainingDebtLabel" Grid.Row="2" Grid.Column="1" />
-
-                <Label Text="Cleared Debt:" Grid.Row="3" />
-                <Label x:Name="ClearedDebtLabel" Grid.Row="3" Grid.Column="1" />
-
-                <Label Text="Total Transactions:" Grid.Row="4" />
-                <Label x:Name="TotalTransactionsLabel" Grid.Row="4" Grid.Column="1" />
-
-                <Label Text="Total Number of Transactions:" Grid.Row="5" />
-                <Label x:Name="TotalTransactionsCountLabel" Grid.Row="5" Grid.Column="1" />
+            <Label Text="Filter by Date Range" 
+                   FontSize="16" 
+                   FontAttributes="Bold" 
+                   Margin="0,10,0,0" 
+                   TextColor="Black"/>
+            <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="10">
+                <DatePicker x:Name="StartDatePicker" 
+                BackgroundColor="#E8F5E9" 
+                TextColor="Green" 
+                FontAttributes="Bold" 
+                HeightRequest="40" 
+                WidthRequest="150"
+                Margin="0,5" 
+                Grid.Column="0" />
+                <DatePicker x:Name="EndDatePicker" 
+                BackgroundColor="#FFEBEE" 
+                TextColor="Red" 
+                FontAttributes="Bold" 
+                HeightRequest="40" 
+                WidthRequest="150"
+                Margin="0,5" 
+                Grid.Column="1" />
             </Grid>
 
-            <!-- Pending Debts -->
-            <Label Text="Pending Debts" FontSize="18" FontAttributes="Bold" Margin="0,10,0,5"/>
+
+            <Button Text="Apply Filter" 
+                    Clicked="OnApplyFilterClicked" 
+                    Margin="0,10,0,10" 
+                    BackgroundColor="#007BFF" 
+                    TextColor="White"/>
+
+            <Label Text="Metrics Overview" 
+                   FontSize="18" 
+                   FontAttributes="Bold" 
+                   Margin="0,10,0,5" 
+                   TextColor="Black"/>
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" 
+                  ColumnDefinitions="*,*" 
+                  RowSpacing="10" 
+                  ColumnSpacing="10">
+                <Label Text="Total Inflows:" TextColor="Black"/>
+                <Label x:Name="TotalInflowsLabel" Grid.Column="1" TextColor="#4CAF50"/>
+
+                <Label Text="Total Outflows:" Grid.Row="1" TextColor="Black"/>
+                <Label x:Name="TotalOutflowsLabel" Grid.Row="1" Grid.Column="1" TextColor="#FF5722"/>
+
+                <Label Text="Remaining Debt:" Grid.Row="2" TextColor="Black"/>
+                <Label x:Name="RemainingDebtLabel" Grid.Row="2" Grid.Column="1" TextColor="Red"/>
+
+                <Label Text="Cleared Debt:" Grid.Row="3" TextColor="Black"/>
+                <Label x:Name="ClearedDebtLabel" Grid.Row="3" Grid.Column="1" TextColor="#4CAF50"/>
+
+                <Label Text="Total Transactions:" Grid.Row="4" TextColor="Black"/>
+                <Label x:Name="TotalTransactionsLabel" Grid.Row="4" Grid.Column="1" TextColor="Blue"/>
+
+                <Label Text="Total Number of Transactions:" Grid.Row="5" TextColor="Black"/>
+                <Label x:Name="TotalTransactionsCountLabel" Grid.Row="5" Grid.Column="1" TextColor="Blue"/>
+            </Grid>
+
+            <Label Text="Pending Debts" 
+                   FontSize="18" 
+                   FontAttributes="Bold" 
+                   Margin="0,10,0,5" 
+                   TextColor="Black"/>
             <CollectionView x:Name="PendingDebtsList" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Margin="0,5" Padding="10" BackgroundColor="LightGray">
-                            <StackLayout>
-                                <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold"/>
-                                <Label Text="{Binding Amount, StringFormat='Amount: {0:C}'}" />
-                                <Label Text="{Binding DueDate, StringFormat='Due: {0:MM/dd/yyyy}'}" />
-                                <Label Text="{Binding ClearedAmount, StringFormat='Cleared: {0:C}'}" />
-                            </StackLayout>
+                        <Frame Margin="0,5" Padding="10" BackgroundColor="#F8F9FA">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" TextColor="Black"/>
+                                <Label Text="{Binding Amount, StringFormat='Amount: {0:C}'}" TextColor="Red"/>
+                                <Label Text="{Binding DueDate, StringFormat='Due: {0:MM/dd/yyyy}'}" TextColor="Black"/>
+                            </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </StackLayout>
+
+            <Label Text="Cash Inflows" 
+       FontSize="20" 
+       FontAttributes="Bold" 
+       TextColor="#4CAF50" />
+            <CollectionView x:Name="CashInflowsCollectionView"
+                ItemsSource="{Binding RecentCashInflows}"
+                SelectionMode="None"
+                HeightRequest="250">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" Margin="10,5" CornerRadius="8" BorderColor="#BDBDBD" BackgroundColor="White" HasShadow="True">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="Blue" />
+                                <Label Text="{Binding Amount, StringFormat='{0:C}'}" FontSize="16" FontAttributes="Bold" TextColor="#4CAF50" />
+                                <Label Text="{Binding Date, StringFormat='{0:MM/dd/yyyy}'}" FontSize="14" TextColor="Black" />
+                                <Label Text="{Binding Note}" FontSize="14" TextColor="Black" LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding Tags}" FontSize="14" TextColor="Black" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+
+            <Label Text="Cash Outflows" 
+       FontSize="20" 
+       FontAttributes="Bold" 
+       TextColor="Red" />
+            <CollectionView x:Name="CashOutflowsCollectionView"
+                ItemsSource="{Binding RecentCashOutflows}"
+                SelectionMode="None"
+                HeightRequest="250">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" Margin="10,5" CornerRadius="8" BorderColor="#BDBDBD" BackgroundColor="White" HasShadow="True">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="Blue" />
+                                <Label Text="{Binding Amount, StringFormat='{0:C}'}" FontSize="16" FontAttributes="Bold" TextColor="Red" />
+                                <Label Text="{Binding Date, StringFormat='{0:MM/dd/yyyy}'}" FontSize="14" TextColor="Black" />
+                                <Label Text="{Binding Note}" FontSize="14" TextColor="Black" LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding Tags}" FontSize="14" TextColor="Black" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

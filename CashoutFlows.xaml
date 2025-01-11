@@ -3,7 +3,8 @@
              xmlns:local="clr-namespace:MoneyMap"
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              x:Class="MoneyMap.CashOutflows"
-             Title="Cash Outflows">
+             Title="Cash Outflows"
+             BackgroundColor="White">
     <ContentPage.Resources>
         <Style x:Key="ItemLabelStyle" TargetType="Label">
             <Setter Property="FontSize" Value="14"/>
@@ -29,7 +30,6 @@
             <Setter Property="Margin" Value="0,5"/>
         </Style>
 
-        <!-- Add Tags Label Style -->
         <Style x:Key="TagsLabelStyle" TargetType="Label">
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="TextColor" Value="Blue"/>
@@ -43,60 +43,64 @@
                    HorizontalOptions="Center"
                    FontSize="18" 
                    FontAttributes="Bold" 
-                   Margin="0,10,0,10"/>
+                   Margin="0,10,0,10"
+                   TextColor="Black"/>
 
-            <!-- Search Bar for searching through cash outflows -->
             <SearchBar x:Name="CashOutflowSearchBar"
                        Placeholder="Search Cash Outflows"
                        TextChanged="OnSearchTextChanged"
-                       Margin="0,10,0,10" />
+                       Margin="0,10,0,10"
+                       TextColor="Black"
+                       PlaceholderColor="Gray"
+                       BackgroundColor="White" />
 
-            <!-- Label and Entry for Title -->
             <Label Text="Title" Style="{StaticResource ItemLabelStyle}" />
-            <Entry x:Name="TitleEntry" Placeholder="Enter Title" />
+            <Entry x:Name="TitleEntry" Placeholder="Enter Title" TextColor="Black" BackgroundColor="White" />
 
-            <!-- Label and Entry for Amount -->
             <Label Text="Amount" Style="{StaticResource ItemLabelStyle}" />
-            <Entry x:Name="AmountEntry" Placeholder="Enter Amount" Keyboard="Numeric" />
+            <Entry x:Name="AmountEntry" Placeholder="Enter Amount" Keyboard="Numeric" TextColor="Black" BackgroundColor="White" />
 
-            <!-- Label and Entry for Note -->
             <Label Text="Note" Style="{StaticResource ItemLabelStyle}" />
-            <Entry x:Name="NoteEntry" Placeholder="Enter Note" />
+            <Entry x:Name="NoteEntry" Placeholder="Enter Note" TextColor="Black" BackgroundColor="White" />
 
-            <!-- Label and Entry for Tags -->
             <Label Text="Tags" Style="{StaticResource ItemLabelStyle}" />
-            <Entry x:Name="TagsEntry" Placeholder="Enter Tags" />
+            <Entry x:Name="TagsEntry" Placeholder="Enter Tags" TextColor="Black" BackgroundColor="White" />
 
             <Button Text="Add Outflow" Clicked="OnAddCashOutflowClicked" 
-                    HorizontalOptions="Center" Margin="0,20,0,10"/>
+                    HorizontalOptions="Center" Margin="0,20,0,10"
+                    TextColor="White" BackgroundColor="Red"/>
             <Label x:Name="CashOutFlowError" TextColor="Red" IsVisible="False" />
 
-            <Label Text="Select Date Range" FontSize="14" HorizontalOptions="Center" Margin="0,10,0,5"/>
+            <Label Text="Select Date Range" FontSize="14" HorizontalOptions="Center" Margin="0,10,0,5" TextColor="Black"/>
 
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
                 <DatePicker x:Name="StartDatePicker" 
                             Date="{Binding StartDate}" 
                             MinimumDate="2023-01-01" 
                             MaximumDate="{Binding EndDate}"
+                            TextColor="Black"
+                            BackgroundColor="White"
                             DateSelected="OnStartDateChanged"/>
                 <DatePicker x:Name="EndDatePicker" 
                             Date="{Binding EndDate}" 
                             MinimumDate="{Binding StartDate}" 
                             MaximumDate="{x:Static sys:DateTime.Now}"
+                            TextColor="Black"
+                            BackgroundColor="White"
                             DateSelected="OnEndDateChanged"/>
             </StackLayout>
 
             <CollectionView x:Name="CashOutflowListView"
                             ItemsSource="{Binding FilteredCashOutflowsList}" 
-                            BackgroundColor="LightGray">
+                            BackgroundColor="White">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <StackLayout Margin="0,10,0,0">
                             <BoxView HeightRequest="1" Color="Gray" HorizontalOptions="FillAndExpand" />
 
-                            <Frame Padding="10" BorderColor="Gray" HasShadow="False">
+                            <Frame Padding="10" BorderColor="Gray" HasShadow="False" BackgroundColor="White">
                                 <StackLayout>
-                                    <Label Text="{Binding Title}" Style="{StaticResource ItemLabelStyle}" TextColor="White"/>
+                                    <Label Text="{Binding Title}" Style="{StaticResource ItemLabelStyle}" TextColor="Black"/>
                                     <Label Text="{Binding Amount, StringFormat='{0:C}'}" Style="{StaticResource AmountLabelStyle}"/>
                                     <Label Text="{Binding Date, StringFormat='{0:MM/dd/yyyy}'}" Style="{StaticResource DateLabelStyle}"/>
                                     <Label Text="{Binding Note}" Style="{StaticResource NoteLabelStyle}"/>
@@ -111,7 +115,8 @@
             </CollectionView>
 
             <Button Text="Go to transaction" Clicked="OnGoToTransactionClicked" 
-                    HorizontalOptions="Center" Margin="0,20,0,10"/>
+                    HorizontalOptions="Center" Margin="0,20,0,10"
+                    TextColor="White" BackgroundColor="Red"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

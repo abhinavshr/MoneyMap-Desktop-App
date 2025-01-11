@@ -25,20 +25,22 @@ namespace MoneyMap
 
                 foreach (var debt in debtList)
                 {
-                    Console.WriteLine($"Debt: {debt.Name}, Amount: {debt.Amount}, Due Date: {debt.DueDate}");
-                    Debts.Add(debt);
+                    if (debt.Amount > 0) 
+                    {
+                        Console.WriteLine($"Debt: {debt.Name}, Amount: {debt.Amount}, Due Date: {debt.DueDate}");
+                        Debts.Add(debt);
+                    }
                 }
 
-                // Log success after adding data to the collection
                 WriteDebtTrackingError_log("Successfully loaded debt tracking data from database.");
             }
             catch (Exception ex)
             {
-                // Log the error message
                 WriteDebtTrackingError_log($"Failed to load debt tracking data: {ex.Message}");
                 await DisplayAlert("Error", $"Failed to load debts: {ex.Message}", "OK");
             }
         }
+
 
         private async void OnAddDebtClicked(object sender, EventArgs e)
         {
@@ -80,46 +82,37 @@ namespace MoneyMap
         {
             try
             {
-                // Get the amount entered in ClearAmountEntry
                 if (!decimal.TryParse(ClearAmountEntry.Text, out decimal clearedAmount))
                 {
                     await DisplayAlert("Error", "Please enter a valid amount.", "OK");
                     return;
                 }
 
-                // Fetch total inflow and outflow using DatabaseHelper
                 decimal totalInflow = await DatabaseHelper.GetTotalInflowAsync();
                 decimal totalOutflow = await DatabaseHelper.GetTotalOutflowAsync();
                 decimal availableFunds = totalInflow - totalOutflow;
 
-                // Fetch the total debt before any payment
                 decimal totalDebtLeft = await DatabaseHelper.GetTotalDebtLeftAsync();
 
-                // Check if sufficient funds are available
                 if (availableFunds >= clearedAmount)
                 {
-                    // Update debt tracking
                     bool isDebtCleared = await DatabaseHelper.ClearDebtAsync(clearedAmount);
 
                     if (isDebtCleared)
                     {
-                        // Update the DebtTracking table
                         bool isUpdated = await DatabaseHelper.UpdateDebtTrackingClearedAmountAsync(clearedAmount);
 
                         if (isUpdated)
                         {
-                            // Calculate total debt paid
                             decimal totalDebtPaid = await DatabaseHelper.GetTotalDebtPaidAsync(totalDebtLeft);
                             decimal remainingDebt = totalDebtLeft - clearedAmount;
 
-                            // Show total debt paid and remaining debt after clearing
                             await DisplayAlert("Debt Cleared",
                                 $"Debt cleared successfully.\n\n" +
                                 $"Total Debt Paid: {totalDebtPaid:C}\n" +
                                 $"Remaining Debt: {remainingDebt:C}",
                                 "OK");
 
-                            // Optionally reset ClearAmountEntry
                             ClearAmountEntry.Text = string.Empty;
                         }
                         else
@@ -150,21 +143,23 @@ namespace MoneyMap
 
             try
             {
-                // Ensure the directory exists
                 string directoryPath = Path.GetDirectoryName(logFilePath);
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
 
-                // Write the log message to the file
                 File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
             }
             catch (Exception ex)
             {
-                // Fallback for logging failure
                 Console.WriteLine($"Logging failed: {ex.Message}");
             }
+        }
+
+        private async void OnGoToTransactionClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new TransactionPage());
         }
     }
 }

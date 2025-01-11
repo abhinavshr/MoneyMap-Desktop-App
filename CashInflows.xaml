@@ -3,7 +3,8 @@
              xmlns:local="clr-namespace:MoneyMap"
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              x:Class="MoneyMap.CashInflows"
-             Title="CashInflows">
+             Title="CashInflows"
+             BackgroundColor="White">
     <ContentPage.Resources>
         <Style x:Key="ItemLabelStyle" TargetType="Label">
             <Setter Property="FontSize" Value="14"/>
@@ -13,78 +14,75 @@
 
         <Style x:Key="AmountLabelStyle" TargetType="Label">
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="TextColor" Value="Green"/>
+            <Setter Property="TextColor" Value="DarkGreen"/>
             <Setter Property="Margin" Value="0,5"/>
         </Style>
 
         <Style x:Key="DateLabelStyle" TargetType="Label">
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="TextColor" Value="Gray"/>
+            <Setter Property="TextColor" Value="DarkBlue"/>
             <Setter Property="Margin" Value="0,5"/>
         </Style>
 
         <Style x:Key="NoteLabelStyle" TargetType="Label">
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="TextColor" Value="Gray"/>
+            <Setter Property="TextColor" Value="DarkGray"/>
             <Setter Property="Margin" Value="0,5"/>
         </Style>
 
-        <!-- Add the missing TagsLabelStyle -->
         <Style x:Key="TagsLabelStyle" TargetType="Label">
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="TextColor" Value="Blue"/>
+            <Setter Property="TextColor" Value="DarkGray"/>
             <Setter Property="Margin" Value="0,5"/>
         </Style>
     </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="10">
+        <VerticalStackLayout Padding="10" BackgroundColor="White">
             <Label Text="Add a Cash Inflow"
                    HorizontalOptions="Center"
                    FontSize="18" 
                    FontAttributes="Bold" 
+                   TextColor="Black"
                    Margin="0,10,0,10"/>
 
-            
-
-            <!-- Label and Entry for Title -->
             <Label Text="Title" Style="{StaticResource ItemLabelStyle}" />
-            <Entry x:Name="TitleEntry" Placeholder="Enter Title" />
+            <Entry x:Name="TitleEntry" Placeholder="Enter Title" TextColor="Black" />
 
-            <!-- Label and Entry for Amount -->
             <Label Text="Amount" Style="{StaticResource ItemLabelStyle}" />
-            <Entry x:Name="AmountEntry" Placeholder="Enter Amount" Keyboard="Numeric" />
+            <Entry x:Name="AmountEntry" Placeholder="Enter Amount" Keyboard="Numeric" TextColor="Black" />
 
-            <!-- Label and Entry for Note -->
             <Label Text="Note" Style="{StaticResource ItemLabelStyle}" />
-            <Entry x:Name="NoteEntry" Placeholder="Enter Note" />
+            <Entry x:Name="NoteEntry" Placeholder="Enter Note" TextColor="Black" />
 
-            <!-- Label and Entry for Tags -->
             <Label Text="Tags" Style="{StaticResource ItemLabelStyle}" />
-            <Entry x:Name="TagsEntry" Placeholder="Enter Tags" />
+            <Entry x:Name="TagsEntry" Placeholder="Enter Tags" TextColor="Black" />
 
             <Button Text="Add Inflow" Clicked="OnAddCashInflowClicked" 
-                    HorizontalOptions="Center" Margin="0,20,0,10"/>
+                    HorizontalOptions="Center" 
+                    TextColor="White" 
+                    BackgroundColor="DarkGreen"
+                    Margin="0,20,0,10"/>
 
             <Label x:Name="CashInFlowError" TextColor="Red" IsVisible="False" />
 
             <SearchBar x:Name="OnSearchBarTextChanged"
-           Placeholder="Search Cash Inflows"
-           TextChanged="OnSearchTextChangedCustom"
-           Margin="0,10,0,10" />
+                       Placeholder="Search Cash Inflows"
+                       TextChanged="OnSearchTextChangedCustom"
+                       Margin="0,10,0,10" TextColor="Black" />
 
             <CollectionView x:Name="CashInflowListView"
                             ItemsSource="{Binding FilteredCashInflowsList}" 
                             SelectionChanged="OnCashInflowSelectionChanged"
-                            BackgroundColor="LightGray">
+                            BackgroundColor="White">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <StackLayout Margin="0,10,0,0">
-                            <BoxView HeightRequest="1" Color="Gray" HorizontalOptions="FillAndExpand" />
+                        <StackLayout Margin="0,10,0,0" BackgroundColor="White">
+                            <BoxView HeightRequest="1" Color="LightGray" HorizontalOptions="FillAndExpand" />
 
-                            <Frame Padding="10" BorderColor="Gray" HasShadow="False">
+                            <Frame Padding="10" BorderColor="LightGray" BackgroundColor="White" HasShadow="False">
                                 <StackLayout>
-                                    <Label Text="{Binding Title}" Style="{StaticResource ItemLabelStyle}" TextColor="White"/>
+                                    <Label Text="{Binding Title}" Style="{StaticResource ItemLabelStyle}" />
                                     <Label Text="{Binding Amount, StringFormat='{0:C}'}" Style="{StaticResource AmountLabelStyle}"/>
                                     <Label Text="{Binding Date, StringFormat='{0:MM/dd/yyyy}'}" Style="{StaticResource DateLabelStyle}"/>
                                     <Label Text="{Binding Note}" Style="{StaticResource NoteLabelStyle}"/>
@@ -92,14 +90,17 @@
                                 </StackLayout>
                             </Frame>
 
-                            <BoxView HeightRequest="1" Color="Gray" HorizontalOptions="FillAndExpand" />
+                            <BoxView HeightRequest="1" Color="LightGray" HorizontalOptions="FillAndExpand" />
                         </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
             <Button Text="Go to Transaction" Clicked="OnGoToTransactionClicked" 
-                    HorizontalOptions="Center" Margin="0,20,0,10"/>
+                    HorizontalOptions="Center" 
+                    TextColor="White" 
+                    BackgroundColor="DarkBlue"
+                    Margin="0,20,0,10"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

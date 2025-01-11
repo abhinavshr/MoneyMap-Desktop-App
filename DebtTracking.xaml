@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MoneyMap.DebtTracking"
-             Title="DebtTracking">
+             Title="DebtTracking"
+             BackgroundColor="White">
     <!-- Wrap the entire content in ScrollView -->
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
@@ -10,38 +11,55 @@
                 Text="Debt Tracking"
                 FontSize="24"
                 FontAttributes="Bold"
-                HorizontalOptions="Center" />
+                HorizontalOptions="Center"
+                TextColor="Blue" />
 
-            <Label Text="Name" FontAttributes="Bold" />
-            <Entry x:Name="NameEntry" Placeholder="Enter Name" />
+            <Label Text="Name" FontAttributes="Bold" TextColor="Blue" />
+            <Entry x:Name="NameEntry" Placeholder="Enter Name" TextColor="Blue" BackgroundColor="White" />
 
-            <Label Text="Amount" FontAttributes="Bold" />
-            <Entry x:Name="AmountEntry" Placeholder="Enter Amount" Keyboard="Numeric" />
+            <Label Text="Amount" FontAttributes="Bold" TextColor="Blue" />
+            <Entry x:Name="AmountEntry" Placeholder="Enter Amount" Keyboard="Numeric" TextColor="Blue" BackgroundColor="White" />
 
-            <Label Text="Due Date" FontAttributes="Bold" />
-            <DatePicker x:Name="DueDatePicker" />
+            <Label Text="Due Date" FontAttributes="Bold" TextColor="Blue" />
+            <DatePicker x:Name="DueDatePicker" TextColor="Blue" BackgroundColor="White" />
 
-            <Button Text="Add Debt" Clicked="OnAddDebtClicked" BackgroundColor="Green" TextColor="White" />
+            <Button Text="Add Debt" Clicked="OnAddDebtClicked" BackgroundColor="Blue" TextColor="White" />
 
-            <Label Text="Amount to Clear" FontAttributes="Bold" />
-            <Entry x:Name="ClearAmountEntry" Placeholder="Enter Amount to Clear" Keyboard="Numeric" />
+            <Label Text="Amount to Clear" FontAttributes="Bold" TextColor="Blue" />
+            <Entry x:Name="ClearAmountEntry" Placeholder="Enter Amount to Clear" Keyboard="Numeric" TextColor="Blue" BackgroundColor="White" />
 
             <Label x:Name="DebtTrackingError" TextColor="Red" IsVisible="False" />
 
             <Button Text="Clear Debts" Clicked="OnClearDebtsClicked" BackgroundColor="Red" TextColor="White" />
 
-            <Label Text="Debt List:" FontAttributes="Bold" />
-            <CollectionView x:Name="DebtListView">
+            <Label Text="Debt List:" FontAttributes="Bold" TextColor="Blue" />
+            <CollectionView x:Name="DebtListView" BackgroundColor="White">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <StackLayout Orientation="Horizontal" Spacing="10">
-                            <Label Text="{Binding Name}" FontAttributes="Bold" />
-                            <Label Text="{Binding Amount, StringFormat='{0:C}'}" />
-                            <Label Text="{Binding DueDate, StringFormat='Due: {0:MM/dd/yyyy}'}" />
-                        </StackLayout>
+                        <Frame BorderColor="Blue" CornerRadius="10" Padding="10" Margin="5" BackgroundColor="White">
+                            <StackLayout Spacing="5">
+                                <Label Text="{Binding Name}" 
+                           FontAttributes="Bold" 
+                           FontSize="16" 
+                           TextColor="Blue" />
+
+                                <Label Text="{Binding Amount, StringFormat='Amount: {0:C}'}" 
+                           FontSize="14" 
+                           TextColor="Red" />
+
+                                <Label Text="{Binding DueDate, StringFormat='Due Date: {0:MM/dd/yyyy}'}" 
+                           FontSize="14" 
+                           TextColor="Gray" />
+                            </StackLayout>
+                        </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+            <Button Text="Go to Transaction" Clicked="OnGoToTransactionClicked" 
+        HorizontalOptions="Center" 
+        TextColor="White" 
+        BackgroundColor="DarkBlue"
+        Margin="0,20,0,10"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
